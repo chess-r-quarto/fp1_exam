@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FP1 Exam Prep Launcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #fbbf24;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(251, 191, 36, 0.1) 0, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            padding: 40px 20px;
+            text-align: center;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 120px;
+            filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .card-icon {
+            width: 160px;
+            height: 160px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover .card-icon img {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .card-desc {
+            color: var(--text-dim);
+            text-align: center;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            min-height: 48px;
+        }
+
+        .btn-launch {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card:hover .btn-launch {
+            background: var(--accent-primary);
+            color: #000;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="FP1 Logo">
+        </div>
+        <h1>FP1 Exam Navigator</h1>
+        <p class="subtitle">学習モジュールを選択して開始してください</p>
+    </header>
+
+    <div class="container">
+        <!-- Tax Card -->
+        <div class="card">
+            <div class="card-icon">
+                <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon">
+            </div>
+            <h2 class="card-title">タックスプランニング</h2>
+            <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
+            <a href="タックス/" class="btn-launch">Launch Module</a>
+        </div>
+
+        <!-- Inheritance Card -->
+        <div class="card">
+            <div class="card-icon">
+                <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
+            </div>
+            <h2 class="card-title">相続・事業承継</h2>
+            <p class="card-desc">相続税、贈与税、事業承継対策、民法などの重要項目を網羅しています。</p>
+            <a href="相続事業承継/" class="btn-launch">Launch Module</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 FP1 Exam Prep Dashboard | Powered by Antigravity
+    </footer>
+</body>
+</html>
