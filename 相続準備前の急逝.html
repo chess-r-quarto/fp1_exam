@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X社 事業承継・相続対策ダッシュボード</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            corporate: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              700: '#0369a1',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- PropTypes (Required for Recharts UMD build) -->
+  <script crossorigin src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+
+  <!-- Babel for TSX/JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Recharts for Data Visualization -->
+  <script crossorigin src="https://unpkg.com/recharts@2.12.2/umd/Recharts.js"></script>
+
+  <script>
+    // Register custom Babel preset for TSX
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; background-color: #f3f4f6; }
+    .glass-panel { background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="tsx">
+    const { useState } = React;
+    const { 
+      BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
+      PieChart, Pie, Cell 
+    } = window.Recharts;
+
+    // --- Data Definitions ---
+
+    const stockDataBefore = [
+      { name: 'Aさん (先代)', value: 80, color: '#94a3b8' },
+      { name: 'Bさん (妻)', value: 10, color: '#f472b6' },
+      { name: 'Cさん (長男)', value: 10, color: '#38bdf8' },
+    ];
+
+    const stockDataAfter = [
+      { name: 'Bさん (妻)', value: 10, color: '#f472b6' },
+      { name: 'Cさん (長男)', value: 90, color: '#38bdf8' },
+    ];
+
+    // Dummy values representing hundreds of millions (億円)
+    const taxEffectData = [
+      {
+        name: '対策なし',
+        '自社株の相続税': 4.0, // Assumption based on 10亿 net assets
+        'その他の相続税': 0.5,
+      },
+      {
+        name: '特例適用＋退職金',
+        '自社株の相続税': 0.0, // 100% exempted/deferred
+        'その他の相続税': 0.3, // Reduced by death benefit deduction
+      },
+    ];
+
+    // --- Components ---
+
+    const SectionTitle = ({ title, icon }) => (
+      <div className="flex items-center mb-4 border-b pb-2 border-gray-200">
+        <span className="text-2xl mr-2">{icon}</span>
+        <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+      </div>
+    );
+
+    const FiveWOneH = () => {
+      const items = [
+        { label: 'Who (誰が)', text: '妻Bさん(68)、長男Cさん(42) ※Aさん(71)は急逝' },
+        { label: 'What (何を)', text: 'X社株式(80%)の円滑な遺産分割と、多額の相続税負担の回避' },
+        { label: 'When (いつまでに)', text: '5ヶ月(代表就任)、8ヶ月(特例承継計画)、10ヶ月(申告)' },
+        { label: 'Where (どこで)', text: '地方都市のX株式会社（大会社・純資産10億円）' },
+        { label: 'Why (なぜ)', text: '突然の相続で事前対策がなく、自社株評価が極めて高いため' },
+        { label: 'How (どのように)', text: '事業承継税制(特例)の申請と、余剰資金(3億円)の活用(退職金等)' },
+      ];
+
+      return (
+        <div className="glass-panel p-6 h-full">
+          <SectionTitle title="5W1H 分析" icon="🎯" />
+          <ul className="space-y-3">
+            {items.map((item, idx) => (
+              <li key={idx} className="flex flex-col sm:flex-row sm:items-baseline">
+                <span className="font-bold text-corporate-700 w-32 shrink-0">{item.label}</span>
+                <span className="text-gray-700">{item.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    };
+
+    const SWOTAnalysis = () => {
+      return (
+        <div className="glass-panel p-6 h-full">
+          <SectionTitle title="SWOT 分析" icon="🔲" />
+          <div className="grid grid-cols-2 gap-4 h-[calc(100%-3rem)]">
+            <div className="bg-blue-50 border-t-4 border-blue-500 p-3 rounded">
+              <h3 className="font-bold text-blue-800 mb-2 flex items-center">
+                <span className="mr-1">💪</span> 強み (Strengths)
+              </h3>
+              <ul className="text-sm text-gray-700 list-disc pl-4 space-y-1">
+                <li>純資産10億円の優良財務基盤</li>
+                <li>即活用可能な余剰資金3億円</li>
+                <li>後継者Cの能力が高く争族リスク無</li>
+              </ul>
+            </div>
+            <div className="bg-red-50 border-t-4 border-red-500 p-3 rounded">
+              <h3 className="font-bold text-red-800 mb-2 flex items-center">
+                <span className="mr-1">⚠️</span> 弱み (Weaknesses)
+              </h3>
+              <ul className="text-sm text-gray-700 list-disc pl-4 space-y-1">
+                <li>生前対策が手つかずの状態</li>
+                <li>自社株評価額が極めて高い</li>
+                <li>Aさんに株式が80%集中している</li>
+              </ul>
+            </div>
+            <div className="bg-green-50 border-t-4 border-green-500 p-3 rounded">
+              <h3 className="font-bold text-green-800 mb-2 flex items-center">
+                <span className="mr-1">💡</span> 機会 (Opportunities)
+              </h3>
+              <ul className="text-sm text-gray-700 list-disc pl-4 space-y-1">
+                <li>事業承継税制(特例)が相続後も利用可</li>
+                <li>死亡退職金の非課税枠の活用</li>
+                <li>相続発生後の自己株式取得特例</li>
+              </ul>
+            </div>
+            <div className="bg-yellow-50 border-t-4 border-yellow-500 p-3 rounded">
+              <h3 className="font-bold text-yellow-800 mb-2 flex items-center">
+                <span className="mr-1">⚡</span> 脅威 (Threats)
+              </h3>
+              <ul className="text-sm text-gray-700 list-disc pl-4 space-y-1">
+                <li>手続き期限が極めてタイト(5,8,10ヶ月)</li>
+                <li>期限徒過による致命的な税負担</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const AssetChart = () => {
+      return (
+        <div className="glass-panel p-6 h-full">
+          <SectionTitle title="株式構成の推移 (目標)" icon="📊" />
+          <div className="flex flex-col md:flex-row justify-around items-center h-[250px]">
+            
+            <div className="w-full md:w-1/2 h-full flex flex-col items-center">
+              <h3 className="text-sm font-bold text-gray-600 mb-2">現状 (相続開始時)</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={stockDataBefore} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({name, value}) => `${name} ${value}%`}>
+                    {stockDataBefore.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="w-full md:w-1/2 h-full flex flex-col items-center">
+              <h3 className="text-sm font-bold text-gray-600 mb-2">対策後 (Cさんへ集中)</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={stockDataAfter} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({name, value}) => `${name} ${value}%`}>
+                    {stockDataAfter.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            ※Cさんに経営権(株式)を集中させつつ、Bさんには会社の余剰資金から「死亡退職金」や「代償分割の原資」として現金を確保する。
+          </p>
+        </div>
+      );
+    };
+
+    const TaxEffectChart = () => {
+      return (
+        <div className="glass-panel p-6 h-full">
+          <SectionTitle title="節税効果シミュレーション" icon="📉" />
+          <div className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={taxEffectData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" />
+                <YAxis label={{ value: '税額 (億円・概算)', angle: -90, position: 'insideLeft', offset: -10 }} />
+                <Tooltip formatter={(value) => `${value} 億円`} />
+                <Legend />
+                <Bar dataKey="自社株の相続税" stackId="a" fill="#ef4444" name="自社株の相続税" />
+                <Bar dataKey="その他の相続税" stackId="a" fill="#f59e0b" name="その他の財産の相続税" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            ※事業承継税制の適用により、自社株にかかる多額の相続税は「全額猶予(実質免除)」される。<br/>
+            ※死亡退職金の活用により、純資産圧縮効果と非課税枠による現預金の移転が同時に可能となる。
+          </p>
+        </div>
+      );
+    };
+
+    const Dashboard = () => {
+      return (
+        <div className="max-w-6xl mx-auto space-y-6">
+          <header className="mb-8">
+            <h1 className="text-3xl font-extrabold text-corporate-900 tracking-tight">
+              事業承継・相続対策プロポーザル
+            </h1>
+            <p className="text-gray-600 mt-2">X株式会社 A様ご遺族（B様・C様）向けシミュレーション</p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FiveWOneH />
+            <SWOTAnalysis />
+            <AssetChart />
+            <TaxEffectChart />
+          </div>
+          
+          <footer className="mt-8 text-center text-gray-500 text-sm">
+            <p>※本ダッシュボードの数値は設例（純資産10億円）に基づく推計モデルです。</p>
+          </footer>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Dashboard />);
+  </script>
+</body>
+</html>
