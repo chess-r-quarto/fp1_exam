@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X社 事業承継コンサルティング・ダッシュボード</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Babel Custom Preset for TSX -->
+    <script>
+        Babel.registerPreset('tsx', {
+            presets: [
+                [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+                Babel.availablePresets['react']
+            ]
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            color: white;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="tsx">
+        const { useEffect, useRef, useState } = React;
+
+        // --- Chart Components ---
+
+        const SharePieChart = () => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Aさん (社長)', 'Bさん (妻)'],
+                        datasets: [{
+                            data: [60, 40],
+                            backgroundColor: ['#2563eb', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (context) => ` ${context.label}: ${context.raw}%` } }
+                        }
+                    }
+                });
+                return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+            }, []);
+
+            return <canvas ref={chartRef}></canvas>;
+        };
+
+        const TaxBarChart = () => {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['特例なし（一般贈与）', '特例税制適用時'],
+                        datasets: [
+                            {
+                                label: '想定贈与税額',
+                                data: [6000, 0],
+                                backgroundColor: '#ef4444',
+                                borderRadius: 4,
+                            },
+                            {
+                                label: '実質手元価値',
+                                data: [6000, 12000],
+                                backgroundColor: '#10b981',
+                                borderRadius: 4,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { stacked: true, grid: { display: false } },
+                            y: { stacked: true, ticks: { callback: (value) => `${value}万円` } }
+                        },
+                        plugins: {
+                            tooltip: { callbacks: { label: (context) => ` ${context.dataset.label}: ${context.raw.toLocaleString()}万円` } }
+                        }
+                    }
+                });
+                return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+            }, []);
+
+            return <canvas ref={chartRef}></canvas>;
+        };
+
+        // --- Main Dashboard Component ---
+
+        const App = () => {
+            // State for Accordion in Q&A
+            const [openQaId, setOpenQaId] = useState(0);
+
+            // Date Calculation
+            const today = new Date('2026-03-15');
+            const deadline = new Date('2026-03-31');
+            const diffTime = Math.abs(deadline - today);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Q&A Data
+            const qaData = [
+                {
+                    q: "X社の事業を承継していくにあたり、どのような方法がベストと考えられますか？",
+                    a: "事業承継税制（特例措置）の適用が考えられます。",
+                    exp: "すでに甥のEさんという適切な後継者候補がおり、実子（Cさん、Dさん）の賛同も得られています。自社株の評価額が高額であるため、税負担を実質ゼロにできる特例の活用が最適解です。M&Aは現状では不要です。"
+                },
+                {
+                    q: "事業承継税制について簡単に教えてください。",
+                    a: "後継者が非上場株式等を相続または贈与により取得した場合、その株式に係る相続税や贈与税が猶予・免除される制度です。",
+                    exp: "今回は生前の交代を想定しているため「贈与税の納税猶予制度」を活用します。後継者が先代経営者から株式の贈与を受けた場合、その贈与税の全額（特例の場合）が納税猶予されます。"
+                },
+                {
+                    q: "事業承継税制の特例を使う上での留意点はありますか？",
+                    a: "2026年3月31日までに「特例承継計画」を都道府県知事に提出する必要があります。",
+                    exp: "この計画は「認定経営革新等支援機関（メインバンクや税理士等）」の指導および助言を受けた上で策定する必要があります。期限が非常に迫っているため最優先事項です。"
+                },
+                {
+                    q: "特例措置の適用期限はいつまでですか？",
+                    a: "2027年12月31日までです。",
+                    exp: "特例承継計画の提出（2026年3月末）はあくまで「事前準備」です。実際に株式の贈与等を行い、制度を適用させる期限が2027年12月末となります。計画提出後、速やかに実行に移すスケジュール管理が重要です。"
+                },
+                {
+                    q: "贈与税に係る事業承継税制の適用を受けるための後継者の要件について教えてください。",
+                    a: "贈与直前において役員に就任していること、贈与によって会社の代表権を有していること、総議決権数の50％超の議決権数を保有することが挙げられます。",
+                    exp: "現在Eさんは主要店舗の店長ですが、役員ではありません。特例適用のためには、まず「Eさんを役員に登用する（役員就任期間の要件：贈与等直前において3年以上役員等であること。ただし特例の場合、要件緩和の可能性あり要確認）」プロセスを急ぐ必要があります。"
+                },
+                {
+                    q: "株式はＡさんが60%、Ｂさんが40%保有していますが、贈与の順番に関して注意すべき点はありますか？",
+                    a: "代表権を有しているAさんから先に贈与を受け、その後にBさんから贈与を受けることで、全ての贈与に適用を受けることができます。",
+                    exp: "【超重要】特例事業承継税制では、最初に贈与を行う者（筆頭贈与者）は「代表権を有していた者」でなければなりません。代表権のないBさんから先に贈与を受けると、その株式は特例の対象外となってしまいます。"
+                }
+            ];
+
+            return (
+                <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+                    
+                    {/* Header & Alert Area */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+                        <div>
+                            <p className="text-sm font-bold text-blue-600 mb-1">Financial Planner Dashboard</p>
+                            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">X社 事業承継ケース分析</h1>
+                            <p className="text-gray-500 mt-2">対象顧客：Aさん（70歳・2代目社長） / 基準日：2026年3月15日</p>
+                        </div>
+                        <div className="bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-sm p-4 min-w-[300px] flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-bold text-red-500 mb-1">ACTION REQUIRED</p>
+                                <p className="font-bold text-gray-800">特例承継計画 提出期限</p>
+                                <p className="text-sm text-gray-600">2026年3月31日まで</p>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-3xl font-black text-red-600">{diffDays}</span>
+                                <span className="text-sm font-bold text-red-400 ml-1">Days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 1: FP目線から見た全体像 */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 className="section-title">
+                            <span className="section-title-icon bg-indigo-600">1</span>
+                            FP目線から見た全体像（エグゼクティブ・サマリー）
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-indigo-50 rounded-lg p-5 border border-indigo-100">
+                                <h3 className="font-bold text-indigo-900 mb-2 flex items-center">
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    現状認識：非常に恵まれた環境
+                                </h3>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    業績好調で自己資本も厚い優良企業。甥のEさんという後継者候補が既に社内で実績（店長）を積んでおり、かつ実子（長男・長女）が承継に賛同している点は、事業承継において<strong>極めて理想的かつ恵まれた状況</strong>です。
+                                </p>
+                            </div>
+                            <div className="bg-red-50 rounded-lg p-5 border border-red-100">
+                                <h3 className="font-bold text-red-900 mb-2 flex items-center">
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    最優先課題：時間の切迫
+                                </h3>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    自社株評価額（類似1万円、純資産2万円）が高額なため、税負担なく株式を移転できる<strong>法人版事業承継税制（特例）の活用が不可欠</strong>です。特例承継計画の提出期限（2026.3.31）が目前に迫っており、即時のアクションが必要です。
+                                </p>
+                            </div>
+                            <div className="bg-amber-50 rounded-lg p-5 border border-amber-100">
+                                <h3 className="font-bold text-amber-900 mb-2 flex items-center">
+                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    M&Aへの対応：不安の払拭
+                                </h3>
+                                <p className="text-sm text-gray-700 leading-relaxed">
+                                    AさんがM&A業者からのアプローチに逡巡していますが、本件はEさんへの「親族内（甥）承継」が最適解です。M&Aは後継者不在の場合の選択肢であり、<strong>現在のX社には不要である旨を明確に伝え、経営者の迷いを断ち切る</strong>サポートが求められます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 2: 5W1H & SWOT Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        {/* 5W1H */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h2 className="section-title">
+                                <span className="section-title-icon bg-blue-500">2</span>
+                                5W1H 分析
+                            </h2>
+                            <ul className="space-y-4">
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">Who</span>
+                                    <span className="text-sm text-gray-700">Aさん（70歳・現社長）から 甥Eさん（42歳・主要店舗店長）へ</span>
+                                </li>
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">What</span>
+                                    <span className="text-sm text-gray-700">X社（大会社・スーパー）の代表権と株式（経営権および財産権）</span>
+                                </li>
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">When</span>
+                                    <span className="text-sm text-gray-700">近いうち（役員登用 → 社長交代）。<br/><span className="text-red-500 font-bold">※特例税制の計画提出は26年3月末がデッドライン</span></span>
+                                </li>
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">Where</span>
+                                    <span className="text-sm text-gray-700">大都市近郊（X社の事業基盤・商圏内）</span>
+                                </li>
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">Why</span>
+                                    <span className="text-sm text-gray-700">Aさんの高齢化。Eさんに将来を託す展望があり、実子の賛同もあるため。</span>
+                                </li>
+                                <li className="flex">
+                                    <span className="w-16 font-bold text-blue-600 shrink-0">How</span>
+                                    <span className="text-sm text-gray-700">事業承継税制の特例を活用し、贈与税を実質免除して株式を移転。M&A仲介の勧誘は断り、親族内承継に集中する。</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* SWOT */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h2 className="section-title">
+                                <span className="section-title-icon bg-green-500">3</span>
+                                SWOT 分析
+                            </h2>
+                            <div className="grid grid-cols-2 gap-3 h-[calc(100%-3rem)]">
+                                <div className="bg-blue-50/50 p-3 rounded border border-blue-100">
+                                    <h3 className="font-bold text-blue-800 text-sm mb-1 border-b border-blue-200 pb-1">Strengths (強み)</h3>
+                                    <ul className="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                        <li>業績堅調（売上25億、利益5千万）</li>
+                                        <li>後継者Eさんが既に自社で実績あり</li>
+                                        <li>長男C・長女Dが承継に賛同済み</li>
+                                        <li>財務基盤が強固（純資産4億円）</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-red-50/50 p-3 rounded border border-red-100">
+                                    <h3 className="font-bold text-red-800 text-sm mb-1 border-b border-red-200 pb-1">Weaknesses (弱み)</h3>
+                                    <ul className="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                        <li>自社株評価額が高い（類似1万, 純資産2万）</li>
+                                        <li>妻Bさんが40%の株式を保有（分散）</li>
+                                        <li>Aさんの事業承継税制とM&Aの知識不足</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-yellow-50/50 p-3 rounded border border-yellow-100">
+                                    <h3 className="font-bold text-yellow-800 text-sm mb-1 border-b border-yellow-200 pb-1">Opportunities (機会)</h3>
+                                    <ul className="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                        <li>法人版事業承継税制(特例)による税負担の抜本的軽減</li>
+                                        <li>メインバンク（認定支援機関）のサポート</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-gray-50 p-3 rounded border border-gray-200">
+                                    <h3 className="font-bold text-gray-800 text-sm mb-1 border-b border-gray-200 pb-1">Threats (脅威)</h3>
+                                    <ul className="text-xs text-gray-700 space-y-1 list-disc pl-4">
+                                        <li>特例計画の期限（26.3.31）切れリスク</li>
+                                        <li>M&A業者の頻繁な営業による意思決定の遅れ</li>
+                                        <li>Eさんが法定相続人ではないことによる遺留分等の法務リスク</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Section 3: Charts Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        {/* Assets Overview */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h2 className="section-title">
+                                <span className="section-title-icon bg-yellow-500">4</span>
+                                資産・企業概要
+                            </h2>
+                            
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center">
+                                    <p className="text-xs text-gray-500 mb-1">大会社 / 従業員80人</p>
+                                    <p className="text-xl font-bold text-gray-800">純資産 4億円</p>
+                                    <p className="text-sm text-gray-600">売上高 25億円</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 text-center">
+                                    <p className="text-xs text-gray-500 mb-1">相続税評価額</p>
+                                    <p className="text-lg font-bold text-blue-600">類似: 10,000円/株</p>
+                                    <p className="text-sm text-gray-600">純資産: 20,000円/株</p>
+                                </div>
+                            </div>
+
+                            <div className="h-48 relative">
+                                <p className="text-center text-sm font-bold text-gray-700 mb-2">株主構成 (発行済 2万株)</p>
+                                <div className="absolute inset-0 top-8 pb-2">
+                                    <SharePieChart />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Tax Effect Chart */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+                            <h2 className="section-title">
+                                <span className="section-title-icon bg-purple-500">5</span>
+                                節税効果シミュレーション
+                            </h2>
+                            <p className="text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded border border-gray-100">
+                                ※前提条件: Aさん保有の12,000株を類似業種比準価額(1万円)で評価。贈与財産額 約1.2億円に対する一般贈与税負担概算（約6,000万円）との比較。
+                            </p>
+                            <div className="flex-grow min-h-[200px] relative mb-4">
+                                <TaxBarChart />
+                            </div>
+                            <div className="mt-auto bg-green-50 border border-green-100 p-3 rounded-lg flex items-start">
+                                <svg className="w-6 h-6 text-green-600 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <p className="text-sm font-bold text-green-800">FPの提案結論</p>
+                                    <p className="text-xs text-green-700 mt-1">
+                                        特例を適用することで、AさんからEさんへの経営権移行時に発生する<strong>約6,000万円の納税負担が全額猶予</strong>されます。会社の資金繰りを一切圧迫せずに承継が可能です。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Section 4: Q&A */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h2 className="section-title">
+                            <span className="section-title-icon bg-teal-500">6</span>
+                            Q&A と 実務解説
+                        </h2>
+                        <div className="space-y-3">
+                            {qaData.map((item, index) => (
+                                <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <button 
+                                        onClick={() => setOpenQaId(openQaId === index ? -1 : index)}
+                                        className="w-full text-left px-5 py-4 bg-gray-50 hover:bg-gray-100 flex justify-between items-center transition-colors"
+                                    >
+                                        <span className="font-bold text-gray-800 text-sm md:text-base pr-4">
+                                            <span className="text-teal-600 mr-2">Q{index + 1}.</span>
+                                            {item.q}
+                                        </span>
+                                        <svg className={`w-5 h-5 text-gray-500 transform transition-transform ${openQaId === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </button>
+                                    {openQaId === index && (
+                                        <div className="px-5 py-4 bg-white border-t border-gray-200">
+                                            <div className="mb-3">
+                                                <p className="text-sm font-bold text-indigo-700 flex items-start">
+                                                    <span className="mr-2">A.</span>
+                                                    <span>{item.a}</span>
+                                                </p>
+                                            </div>
+                                            <div className="bg-slate-50 p-3 rounded text-sm text-gray-600 border border-slate-100">
+                                                <p className="font-bold text-slate-700 mb-1 text-xs">【FP解説】</p>
+                                                <p>{item.exp}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
