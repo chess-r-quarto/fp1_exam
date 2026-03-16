@@ -1,455 +1,312 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FP1 Exam Prep Launcher</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --anaconda-green: #43b02a;
-            --sidebar-bg: #2c3e50;
-            --main-bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --border-color: #dee2e6;
-            --btn-blue: #007bff;
-            --sidebar-hover: rgba(255, 255, 255, 0.1);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP1 Exam Prep Launcher</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --anaconda-green: #43b02a;
+      --sidebar-bg: #2c3e50;
+      --main-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #dee2e6;
+      --btn-blue: #007bff;
+      --sidebar-hover: rgba(255, 255, 255, 0.1);
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        body {
-            background-color: var(--main-bg);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
+    body {
+      background-color: var(--main-bg);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 240px;
-            background-color: var(--sidebar-bg);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background-color: var(--sidebar-bg);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
 
-        .sidebar-header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+    .sidebar-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-        .sidebar-header img {
-            width: 32px;
-            height: 32px;
-        }
+    .sidebar-header img {
+      width: 32px;
+      height: 32px;
+    }
 
-        .sidebar-header span {
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
+    .sidebar-header span {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
 
-        .sidebar-nav {
-            flex-grow: 1;
-            padding-top: 10px;
-        }
+    .sidebar-nav {
+      flex-grow: 1;
+      padding-top: 10px;
+    }
 
-        .nav-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-        }
+    .nav-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+    }
 
-        .nav-item:hover {
-            background: var(--sidebar-hover);
-            color: white;
-        }
+    .nav-item:hover {
+      background: var(--sidebar-hover);
+      color: white;
+    }
 
-        .nav-item.active {
-            background: var(--anaconda-green);
-            color: white;
-            font-weight: 600;
-        }
+    .nav-item.active {
+      background: var(--anaconda-green);
+      color: white;
+      font-weight: 600;
+    }
 
-        /* Main Content */
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+    /* Main Content */
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
 
-        .top-bar {
-            height: 60px;
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-            font-size: 0.9rem;
-        }
+    .top-bar {
+      height: 60px;
+      background: white;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      font-size: 0.9rem;
+    }
 
-        .top-bar span strong {
-            color: var(--anaconda-green);
-        }
+    .top-bar span strong {
+      color: var(--anaconda-green);
+    }
 
-        .content-header {
-            padding: 30px;
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .content-header {
+      padding: 30px;
+      background: white;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        .content-header h1 {
-            font-size: 24px;
-            font-weight: 400;
-            color: var(--text-primary);
-        }
+    .content-header h1 {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
 
-        .container {
-            padding: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
+    .container {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
 
-        /* Application Card */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: box-shadow 0.2s;
-            text-align: center;
-        }
+    /* Application Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s;
+      text-align: center;
+    }
 
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
-        .card-icon {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .card-icon img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
+    .card-icon img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
 
-        .card-desc {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 24px;
-            min-height: 4.5em; /* 3 lines roughly */
-        }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 24px;
+      min-height: 4.5em; /* 3 lines roughly */
+    }
 
-        .btn-launch {
-            border: 1px solid var(--border-color);
-            background: white;
-            color: var(--text-primary);
-            padding: 8px 0;
-            width: 100%;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.2s;
-            margin-top: auto;
-        }
+    .btn-launch {
+      border: 1px solid var(--border-color);
+      background: white;
+      color: var(--text-primary);
+      padding: 8px 0;
+      width: 100%;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-top: auto;
+    }
 
-        .btn-launch:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
-        }
+    .btn-launch:hover {
+      background: #f8f9fa;
+      border-color: #adb5bd;
+    }
 
-        .btn-launch.primary {
-            background: white;
-            color: var(--btn-blue);
-            border-color: var(--btn-blue);
-        }
+    .btn-launch.primary {
+      background: white;
+      color: var(--btn-blue);
+      border-color: var(--btn-blue);
+    }
 
-        .btn-launch.primary:hover {
-            background: var(--btn-blue);
-            color: white;
-        }
+    .btn-launch.primary:hover {
+      background: var(--btn-blue);
+      color: white;
+    }
 
-        footer {
-            padding: 20px 30px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            background: white;
-            margin-top: auto;
-        }
+    footer {
+      padding: 20px 30px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border-color);
+      background: white;
+      margin-top: auto;
+    }
 
-        /* Responsive */
-        @media (max-width: 800px) {
-            .sidebar { width: 60px; }
-            .sidebar-header span, .nav-item span { display: none; }
-            .nav-item { justify-content: center; padding: 15px 0; }
-        }
-    </style>
+    /* Responsive */
+    @media (max-width: 800px) {
+      .sidebar {
+        width: 60px;
+      }
+      .sidebar-header span,
+      .nav-item span {
+        display: none;
+      }
+      .nav-item {
+        justify-content: center;
+        padding: 15px 0;
+      }
+    }
 
-        header {
-            width: 100%;
-            padding: 40px 20px;
-            text-align: center;
-            animation: fadeInDown 1s ease-out;
-        }
-
-        .logo-container {
-            margin-bottom: 20px;
-        }
-
-        .logo-container img {
-            width: 120px;
-            filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            margin-bottom: 8px;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-dim);
-            font-size: 1.1rem;
-            font-weight: 300;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transform: translateX(-100%);
-            transition: 0.6s;
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .card:hover::before {
-            transform: translateX(100%);
-        }
-
-        .card-icon {
-            width: 160px;
-            height: 160px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card-icon img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.4s ease;
-        }
-
-        .card:hover .card-icon img {
-            transform: rotate(5deg) scale(1.1);
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #fff;
-        }
-
-        .card-desc {
-            color: var(--text-dim);
-            text-align: center;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            min-height: 48px;
-        }
-
-        .btn-launch {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 12px 30px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            width: 100%;
-            text-align: center;
-        }
-
-        .card:hover .btn-launch {
-            background: var(--accent-primary);
-            color: #000;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 40px 20px;
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            h1 { font-size: 1.8rem; }
-            .container { grid-template-columns: 1fr; }
-        }
-    </style>
+    @media (max-width: 600px) {
+      .content-header h1 {
+        font-size: 1.8rem;
+      }
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="Logo">
-            <span>ANACONDA</span>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <!-- Ensure the image path is correct in your environment -->
+      <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'#43b02a\'/><text x=\'50%\' y=\'50%\' fill=\'white\' font-size=\'12\' dominant-baseline=\'middle\' text-anchor=\'middle\'>FP</text></svg>'">
+      <span>ANACONDA</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <span>Home</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span>Environments</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span>Learning</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span>Community</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <div class="top-bar">
+      <span>Applications on <strong>base (root)</strong></span>
+    </div>
+
+    <div class="content-header">
+      <h1>Home</h1>
+    </div>
+
+    <div class="container">
+      <!-- Tax Card -->
+      <div class="card">
+        <div class="card-icon">
+          <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon" onerror="this.style.display='none'">
         </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">
-                <span>Home</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>Environments</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>Learning</span>
-            </a>
-            <a href="#" class="nav-item">
-                <span>Community</span>
-            </a>
-        </nav>
-    </aside>
+        <h3 class="card-title">タックス</h3>
+        <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
+        <a href="タックス/" class="btn-launch primary">Launch</a>
+      </div>
 
-    <main class="main-content">
-        <div class="top-bar">
-            <span>Applications on <strong>base (root)</strong></span>
+      <!-- Inheritance Card 1 -->
+      <div class="card">
+        <div class="card-icon">
+          <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon" onerror="this.style.display='none'">
         </div>
+        <h3 class="card-title">相続準備前の急逝</h3>
+        <p class="card-desc">相続対策における不測の事態への対応を学習します。</p>
+        <a href="相続事業承継/相続準備前の急逝.html" class="btn-launch primary">Launch</a>
+      </div>
 
-        <div class="content-header">
-            <h1>Home</h1>
+      <!-- Inheritance Card 2 -->
+      <div class="card">
+        <div class="card-icon">
+          <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon" onerror="this.style.display='none'">
         </div>
+        <h3 class="card-title">金庫株の活用</h3>
+        <p class="card-desc">事業承継における金庫株の戦略的活用を学習します。</p>
+        <a href="相続事業承継/金庫株の活用.html" class="btn-launch primary">Launch</a>
+      </div>
+    </div>
 
-        <div class="container">
-            <!-- Tax Card -->
-            <div class="card">
-                <div class="card-icon">
-                    <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon">
-                </div>
-                <h3 class="card-title">タックス</h3>
-                <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
-                <a href="タックス/" class="btn-launch primary">Launch</a>
-            </div>
-
-            <!-- Inheritance Card 1 -->
-            <div class="card">
-                <div class="card-icon">
-                    <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
-                </div>
-                <h3 class="card-title">相続準備前の急逝</h3>
-                <p class="card-desc">相続対策における不測の事態への対応を学習します。</p>
-                <a href="相続事業承継/相続準備前の急逝.html" class="btn-launch primary">Launch</a>
-            </div>
-
-            <!-- Inheritance Card 2 -->
-            <div class="card">
-                <div class="card-icon">
-                    <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
-                </div>
-                <h3 class="card-title">金庫株の活用</h3>
-                <p class="card-desc">事業承継における金庫株の戦略的活用を学習します。</p>
-                <a href="相続事業承継/金庫株の活用.html" class="btn-launch primary">Launch</a>
-            </div>
-        </div>
-
-        <footer>
-            &copy; 2026 FP1 Exam Navigator | Anaconda Navigator Style Redesign
-        </footer>
-    </main>
+    <footer>
+      &copy; 2026 FP1 Exam Navigator | Anaconda Navigator Style Redesign
+    </footer>
+  </main>
 </body>
 </html>
