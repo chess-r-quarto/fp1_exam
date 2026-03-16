@@ -51,7 +51,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .sidebar-header img {
+    .sidebar-header svg {
       width: 32px;
       height: 32px;
     }
@@ -156,10 +156,9 @@
       justify-content: center;
     }
 
-    .card-icon img {
+    .card-icon svg {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain;
     }
 
     .card-title {
@@ -243,8 +242,11 @@
 <body>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <!-- Ensure the image path is correct in your environment -->
-      <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'#43b02a\'/><text x=\'50%\' y=\'50%\' fill=\'white\' font-size=\'12\' dominant-baseline=\'middle\' text-anchor=\'middle\'>FP</text></svg>'">
+      <!-- SVG Logo replacing PNG -->
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="16" fill="#43b02a"/>
+        <text x="50%" y="50%" fill="white" font-size="14" font-weight="bold" dominant-baseline="middle" text-anchor="middle">FP</text>
+      </svg>
       <span>ANACONDA</span>
     </div>
     <nav class="sidebar-nav">
@@ -273,33 +275,67 @@
     </div>
 
     <div class="container">
-      <!-- Tax Card -->
+      <!-- Employee Succession Card -->
       <div class="card">
         <div class="card-icon">
-          <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon" onerror="this.style.display='none'">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b02a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
         </div>
-        <h3 class="card-title">タックス</h3>
-        <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
-        <a href="タックス/" class="btn-launch primary">Launch</a>
+        <h3 class="card-title">従業員承継</h3>
+        <p class="card-desc">親族外である従業員への円滑な事業承継手法や、MBO等の留意点を学習します。</p>
+        <a href="従業員承継.html" class="btn-launch primary">Launch</a>
       </div>
 
-      <!-- Inheritance Card 1 -->
+      <!-- Corporate Succession Special Measure Card -->
       <div class="card">
         <div class="card-icon">
-          <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon" onerror="this.style.display='none'">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b02a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+            <path d="M9 22v-4h6v4"></path>
+            <path d="M8 6h.01"></path>
+            <path d="M16 6h.01"></path>
+            <path d="M12 6h.01"></path>
+            <path d="M12 10h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M16 10h.01"></path>
+            <path d="M16 14h.01"></path>
+            <path d="M8 10h.01"></path>
+            <path d="M8 14h.01"></path>
+          </svg>
+        </div>
+        <h3 class="card-title">法人事業承継特例措置</h3>
+        <p class="card-desc">法人版事業承継税制（特例措置）の適用要件や実務上のポイントを学習します。</p>
+        <a href="法人事業承継特例措置.html" class="btn-launch primary">Launch</a>
+      </div>
+
+      <!-- Sudden Death Before Preparation Card -->
+      <div class="card">
+        <div class="card-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b02a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
         </div>
         <h3 class="card-title">相続準備前の急逝</h3>
-        <p class="card-desc">相続対策における不測の事態への対応を学習します。</p>
+        <p class="card-desc">十分な相続対策を行う前に発生した相続に関する初動対応や手続きを学習します。</p>
         <a href="相続事業承継/相続準備前の急逝.html" class="btn-launch primary">Launch</a>
       </div>
 
-      <!-- Inheritance Card 2 -->
+      <!-- Treasury Stock Card -->
       <div class="card">
         <div class="card-icon">
-          <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon" onerror="this.style.display='none'">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#43b02a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
         </div>
         <h3 class="card-title">金庫株の活用</h3>
-        <p class="card-desc">事業承継における金庫株の戦略的活用を学習します。</p>
+        <p class="card-desc">自己株式の取得（金庫株）を活用した事業承継対策や資金繰りについて学習します。</p>
         <a href="相続事業承継/金庫株の活用.html" class="btn-launch primary">Launch</a>
       </div>
     </div>
