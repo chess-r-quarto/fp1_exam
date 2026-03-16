@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FP1級 実技対策ダッシュボード：金庫株の活用（図解追加版）</title>
-  <!-- Tailwind CSS -->
+  <title>FP1級 実技対策レポート：金庫株の活用</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <!-- Babel for in-browser compilation -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Babel Configuration for TSX -->
   <script>
     Babel.registerPreset('tsx', {
       presets: [
@@ -23,28 +19,38 @@
   </script>
 
   <style>
+    /* デジタル庁ガイドライン＆Solarized Lightに合わせたベース設定 */
+    :root {
+      --base03: #002b36;
+      --base02: #073642; /* 見出しなど強いテキスト */
+      --base01: #586e75;
+      --base00: #657b83; /* 本文テキスト */
+      --base0:  #839496;
+      --base1:  #93a1a1;
+      --base2:  #eee8d5; /* 背景アクセント */
+      --base3:  #fdf6e3; /* メイン背景色 */
+      --yellow: #b58900;
+      --orange: #cb4b16;
+      --red:    #dc322f;
+      --magenta:#d33682;
+      --violet: #6c71c4;
+      --blue:   #268bd2;
+      --cyan:   #2aa198;
+      --green:  #859900;
+    }
     body {
-      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-      background-color: #f9fafb;
+      background-color: var(--base3);
+      color: var(--base00);
+      /* 視認性の高い明朝体/ゴシック体のハイブリッド・フォント指定（Kindle等での読みやすさ重視） */
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      line-height: 1.6;
       margin: 0;
+      padding: 0;
     }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-    
-    /* グラフアニメーション用 */
-    @keyframes growWidth {
-      from { width: 0; }
-    }
-    .animate-grow-width {
-      animation: growWidth 1s ease-out forwards;
-    }
-    @keyframes growHeight {
-      from { height: 0; }
-    }
-    .animate-grow-height {
-      animation: growHeight 1s ease-out forwards;
+    h1, h2, h3, h4 {
+      color: var(--base02);
+      font-weight: bold;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -52,457 +58,219 @@
   <div id="root"></div>
 
   <script type="text/babel" data-presets="tsx">
-    const { useState, useEffect } = React;
-
-    // --- Icons (Inline SVGs) ---
-    const IconUser = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
-    const IconPieChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>;
-    const IconMessageCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>;
-    const IconBriefcase = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>;
-    const IconChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
-    const IconChevronUp = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>;
-    const IconChartBar = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
-
-    // --- Types ---
-    type TabType = 'overview' | 'swot' | 'qa' | 'fp';
-
-    // --- Custom Chart Components ---
-
-    // 1. 財産構成の帯グラフ (Asset Breakdown Bar Chart)
-    const AssetBreakdownChart = () => {
-      const assets = [
-        { name: 'X社株式', value: 16800, color: 'bg-red-500', textColor: 'text-red-700' },
-        { name: 'X社不動産', value: 12000, color: 'bg-orange-400', textColor: 'text-orange-700' },
-        { name: '現預金', value: 10800, color: 'bg-blue-400', textColor: 'text-blue-700' },
-        { name: '自宅等', value: 10000, color: 'bg-green-400', textColor: 'text-green-700' },
-        { name: '上場株式', value: 2400, color: 'bg-purple-400', textColor: 'text-purple-700' },
-      ];
-      const total = 52000;
-
-      return (
-        <div className="my-6 p-4 bg-white rounded-lg border border-gray-100 shadow-inner">
-          <h4 className="text-sm font-bold text-gray-600 mb-3 text-center">Aさんの財産構成割合 (総額 5億2,000万円)</h4>
-          
-          {/* 積み上げバー */}
-          <div className="w-full h-8 flex rounded-full overflow-hidden shadow-sm mb-4 bg-gray-200">
-            {assets.map((asset, index) => {
-              const percentage = (asset.value / total) * 100;
-              return (
-                <div 
-                  key={index} 
-                  className={`h-full ${asset.color} flex items-center justify-center transition-all duration-1000 animate-grow-width`}
-                  style={{ width: `${percentage}%` }}
-                  title={`${asset.name}: ${asset.value}万円 (${percentage.toFixed(1)}%)`}
-                >
-                  {percentage > 10 && <span className="text-white text-xs font-bold">{percentage.toFixed(0)}%</span>}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 凡例 */}
-          <div className="flex flex-wrap justify-center gap-4 text-xs">
-            {assets.map((asset, index) => {
-              const percentage = (asset.value / total) * 100;
-              const isBusinessAsset = asset.name.includes('X社');
-              return (
-                <div key={index} className="flex items-center">
-                  <span className={`w-3 h-3 rounded-full mr-1.5 ${asset.color}`}></span>
-                  <span className={`font-medium ${asset.textColor}`}>
-                    {asset.name} {isBusinessAsset ? '(事業用)' : ''}
-                    <span className="text-gray-500 ml-1">({percentage.toFixed(1)}%)</span>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-3 text-center text-xs text-red-600 font-semibold bg-red-50 p-2 rounded">
-            ⚠️ 課題：X社関連資産（株式＋不動産）が全体の約55.4%を占めており、遺留分対策や納税資金の確保が急務です。
-          </div>
-        </div>
-      );
-    };
-
-    // 2. 金庫株の課税関係比較図 (Tax Comparison Chart)
-    const TaxComparisonChart = () => {
-      return (
-        <div className="my-6 p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
-            <IconChartBar /><span className="ml-2">金庫株譲渡時の課税関係の比較</span>
-          </h3>
-          <p className="text-sm text-gray-600 text-center mb-6">自社株を会社に買い取ってもらう（金庫株にする）タイミングによる税務上の違い</p>
-          
-          <div className="flex flex-col md:flex-row gap-8 items-stretch justify-center">
-            
-            {/* 生前譲渡のバー */}
-            <div className="flex-1 flex flex-col items-center">
-              <div className="bg-red-50 text-red-800 font-bold px-4 py-2 rounded-t-lg w-full text-center border-b-2 border-red-200">
-                ① 生前譲渡 (原則)
-              </div>
-              <div className="w-full h-64 flex flex-col-reverse bg-gray-50 border border-gray-200 rounded-b-lg overflow-hidden relative group">
-                {/* 取得費部分 */}
-                <div className="h-[15%] w-full bg-gray-300 flex items-center justify-center border-t border-gray-400">
-                  <span className="text-xs font-semibold text-gray-700">取得費</span>
-                </div>
-                {/* 譲渡益部分 */}
-                <div className="h-[25%] w-full bg-blue-200 flex flex-col items-center justify-center border-t border-blue-300 relative">
-                  <span className="text-sm font-bold text-blue-800 z-10">譲渡対価</span>
-                  <span className="text-xs text-blue-700 z-10">（資本金等の額）</span>
-                  {/* 注釈吹き出し */}
-                  <div className="absolute right-0 translate-x-full ml-2 w-32 bg-white text-xs border border-blue-200 p-2 rounded shadow-lg hidden group-hover:block z-20">
-                    <span className="font-bold text-blue-700">分離課税 20.315%</span>
-                    <br/>(譲渡対価 - 取得費)に対して課税
-                  </div>
-                </div>
-                {/* みなし配当部分 */}
-                <div className="h-[60%] w-full bg-red-200 flex flex-col items-center justify-center relative">
-                  <span className="text-lg font-bold text-red-800 z-10">みなし配当</span>
-                  <span className="text-xs font-semibold text-red-700 mt-1 z-10">資本金等の額を超える部分</span>
-                  <div className="mt-2 bg-red-100 px-2 py-1 rounded text-xs font-bold text-red-700 border border-red-300 z-10">
-                    総合課税 (最大約55%)
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 mt-3 text-center h-10">
-                資本金等の額を超える部分は「配当」とみなされ、累進税率により税負担が非常に重くなる。
-              </p>
-            </div>
-
-            {/* 相続後譲渡のバー */}
-            <div className="flex-1 flex flex-col items-center">
-              <div className="bg-green-50 text-green-800 font-bold px-4 py-2 rounded-t-lg w-full text-center border-b-2 border-green-200">
-                ② 相続後譲渡 (特例適用)
-              </div>
-              <div className="w-full h-64 flex flex-col-reverse bg-gray-50 border border-gray-200 rounded-b-lg overflow-hidden relative group">
-                {/* 取得費部分 */}
-                <div className="h-[15%] w-full bg-gray-300 flex flex-col items-center justify-center border-t border-gray-400 relative">
-                  <span className="text-xs font-semibold text-gray-700 z-10">取得費</span>
-                  {/* 取得費加算の特例を表現する矢印 */}
-                  <div className="absolute -top-3 right-2 text-[10px] text-green-700 font-bold flex flex-col items-center animate-bounce">
-                    <span>↑特例で加算</span>
-                  </div>
-                </div>
-                {/* 譲渡益部分 (全体) */}
-                <div className="h-[85%] w-full bg-green-200 flex flex-col items-center justify-center border-t border-green-300 relative">
-                  <span className="text-lg font-bold text-green-800 z-10">全額が譲渡対価</span>
-                  <span className="text-xs font-semibold text-green-700 mt-1 z-10">（みなし配当課税なし）</span>
-                  <div className="mt-4 bg-green-100 px-3 py-1 rounded text-sm font-bold text-green-700 border border-green-300 shadow-sm z-10">
-                    分離課税 (一律 20.315%)
-                  </div>
-                  {/* 注釈吹き出し */}
-                  <div className="absolute left-0 -translate-x-full mr-2 w-32 bg-white text-xs border border-green-200 p-2 rounded shadow-lg hidden group-hover:block z-20">
-                    相続税申告期限から3年以内の譲渡であれば特例適用。<br/>さらに「取得費加算の特例」も併用可能。
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 mt-3 text-center h-10">
-                みなし配当課税が行われず、全額が申告分離課税となるため、手元に多くの資金を残せる。
-              </p>
-            </div>
-
-          </div>
-        </div>
-      );
-    };
-
-    // --- Panel Components ---
-
-    // 1. 設例概要パネル
-    const OverviewPanel = () => (
-      <div className="space-y-6 animate-fade-in">
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">設例の概要（5W1H分析）</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-lg text-blue-800 mb-3 flex items-center"><IconUser /><span className="ml-2">登場人物・企業</span></h3>
-            <ul className="space-y-2 text-gray-700 text-sm">
-              <li><span className="font-semibold text-gray-900">Aさん(70歳):</span> X社代表取締役社長。40年前に弟と創業。</li>
-              <li><span className="font-semibold text-gray-900">弟Eさん(68歳):</span> X社専務取締役。体調不良。20%の株式保有。</li>
-              <li><span className="font-semibold text-gray-900">甥Fさん(45歳):</span> Eさんの長男。X社技術部長。後継者予定。</li>
-              <li><span className="font-semibold text-gray-900">非後継者:</span> 長女Cさん(37歳)、二女Dさん(34歳)。</li>
-            </ul>
-          </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="font-bold text-lg text-green-800 mb-3 flex items-center"><IconBriefcase /><span className="ml-2">現状の課題・目的</span></h3>
-            <ul className="space-y-2 text-gray-700 text-sm">
-              <li><span className="font-semibold">事業承継:</span> Fさんへの円滑な株式・経営権の移転（事業承継税制）。</li>
-              <li><span className="font-semibold">資産承継:</span> Cさん、Dさんの遺留分対策と納税資金の確保。</li>
-              <li><span className="font-semibold">手法:</span> 事業承継税制、金庫株の特例、遺留分に関する民法特例の活用。</li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mt-6">
-          <h3 className="font-bold text-lg text-purple-800 mb-3">Aさんの財産構成と評価額</h3>
-          
-          {/* 追加：財産構成グラフ */}
-          <AssetBreakdownChart />
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left text-gray-700 border-collapse">
-              <thead className="bg-gray-100 text-gray-900 border-b-2 border-gray-200">
-                <tr><th className="px-4 py-3">財産項目</th><th className="px-4 py-3 text-right">評価額</th><th className="px-4 py-3 text-right">構成比</th></tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                <tr><td className="px-4 py-2 border-l-4 border-blue-400">1. 現預金</td><td className="px-4 py-2 text-right">1億800万円</td><td className="px-4 py-2 text-right text-gray-500">20.8%</td></tr>
-                <tr><td className="px-4 py-2 border-l-4 border-purple-400">2. 上場株式</td><td className="px-4 py-2 text-right">2,400万円</td><td className="px-4 py-2 text-right text-gray-500">4.6%</td></tr>
-                <tr className="bg-red-50"><td className="px-4 py-2 font-semibold border-l-4 border-red-500">3. X社株式 (80%)</td><td className="px-4 py-2 text-right font-semibold text-red-600">1億6,800万円</td><td className="px-4 py-2 text-right text-red-500 font-semibold">32.3%</td></tr>
-                <tr><td className="px-4 py-2 border-l-4 border-green-400">4. 自宅 (土地・建物)</td><td className="px-4 py-2 text-right">1億円</td><td className="px-4 py-2 text-right text-gray-500">19.2%</td></tr>
-                <tr className="bg-orange-50"><td className="px-4 py-2 font-semibold border-l-4 border-orange-400">5. X社本社・工場土地</td><td className="px-4 py-2 text-right font-semibold text-orange-600">1億2,000万円</td><td className="px-4 py-2 text-right text-orange-500 font-semibold">23.1%</td></tr>
-                <tr className="font-bold bg-gray-200 border-t-2 border-gray-300"><td className="px-4 py-3">合計</td><td className="px-4 py-3 text-right">5億2,000万円</td><td className="px-4 py-3 text-right">100.0%</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-
-    // 2. SWOT分析パネル
-    const SwotPanel = () => (
-      <div className="space-y-6 animate-fade-in">
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">相談者のSWOT分析</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-5 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-xl text-blue-900 mb-2 border-b border-blue-200 pb-1">S (Strengths: 強み)</h3>
-            <ul className="list-disc list-inside space-y-2 text-sm text-blue-800 mt-3">
-              <li>取引先から高く評価される技術力。業績好調。</li>
-              <li>既に後継者(Fさん)が技術部門の中核であり、就任を承諾済。</li>
-              <li>事業承継税制の特例承継計画を県知事に提出し、確認済。</li>
-            </ul>
-          </div>
-          <div className="bg-red-50 p-5 rounded-xl border border-red-200 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-xl text-red-900 mb-2 border-b border-red-200 pb-1">W (Weaknesses: 弱み)</h3>
-            <ul className="list-disc list-inside space-y-2 text-sm text-red-800 mt-3">
-              <li>Aさんの財産における自社株と事業用不動産の割合が高い（約55%）。</li>
-              <li>非後継者(長女・二女)が経営に関心がなく、相続時に遺留分トラブルのリスクがある。</li>
-            </ul>
-          </div>
-          <div className="bg-green-50 p-5 rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-xl text-green-900 mb-2 border-b border-green-200 pb-1">O (Opportunities: 機会)</h3>
-            <ul className="list-disc list-inside space-y-2 text-sm text-green-800 mt-3">
-              <li>事業承継税制の特例措置（100％納税猶予）が利用可能。</li>
-              <li><span className="font-bold bg-green-200 px-1 rounded">みなし配当課税の特例</span>や、取得費加算の特例など、有利な税制が存在。</li>
-              <li>遺留分に関する民法特例（除外合意・固定合意）が利用可能。</li>
-            </ul>
-          </div>
-          <div className="bg-yellow-50 p-5 rounded-xl border border-yellow-200 shadow-sm hover:shadow-md transition-shadow">
-            <h3 className="font-bold text-xl text-yellow-900 mb-2 border-b border-yellow-200 pb-1">T (Threats: 脅威)</h3>
-            <ul className="list-disc list-inside space-y-2 text-sm text-yellow-800 mt-3">
-              <li>弟Eさんの体調不良。万が一Aさんより先に相続が発生した場合、Eさん保有株(20%)が分散し権利関係が複雑化する恐れ。</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    );
-
-    // 3. Q&A 解説パネル
-    const QaItem = ({ question, answer, explanation, isCrucial, children }: { question: string, answer: string, explanation: string, isCrucial?: boolean, children?: React.ReactNode }) => {
-      const [isOpen, setIsOpen] = useState(isCrucial || false); // 重要なものは初期状態で開く
-      return (
-        <div className={`border rounded-lg mb-4 overflow-hidden transition-all duration-200 shadow-sm ${isCrucial ? 'border-red-300 ring-1 ring-red-100' : 'border-gray-200'}`}>
-          <button 
-            className={`w-full text-left px-5 py-4 flex justify-between items-center focus:outline-none ${isOpen ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'} ${isCrucial ? 'bg-red-50/50' : ''}`}
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <span className={`font-semibold text-base ${isCrucial ? 'text-red-700' : 'text-gray-800'}`}>
-              {isCrucial && <span className="inline-block mr-2 text-red-500">★重要</span>}
-              Q. {question}
-            </span>
-            {isOpen ? <IconChevronUp /> : <IconChevronDown />}
-          </button>
-          {isOpen && (
-            <div className="px-5 py-4 bg-white border-t border-gray-100">
-              <div className="mb-4">
-                <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded mr-2 shadow-sm">正解</span>
-                <span className="text-gray-900 font-bold text-lg">{answer}</span>
-              </div>
-              <div className="bg-blue-50/50 p-4 rounded-lg text-sm text-gray-700 border-l-4 border-blue-400">
-                <p className="font-bold text-blue-900 mb-2">解説</p>
-                <p className="leading-relaxed">{explanation}</p>
-              </div>
-              {children && (
-                <div className="mt-4 border-t border-gray-100 pt-4">
-                  {children}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    const QaPanel = () => (
-      <div className="space-y-4 animate-fade-in">
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2 flex items-center justify-between">
-          <span>Q&A 解説：金庫株の論点</span>
-          <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">重要項目は開いています</span>
-        </h2>
-        
-        <QaItem 
-          question="金庫株とはどのようなものですか？" 
-          answer="企業が自社の株式を買い戻して保有する株式（自己株式）" 
-          explanation="売買などの予定がない、流動性の低い株式というだけでなく、具体的には「発行会社自身が取得・保有している自己株式」のことを指します。FP実務では、非上場会社の事業承継における資金捻出や分散防止策として頻出します。" 
-        />
-        
-        <QaItem 
-          question="現時点でAさんが金庫株により換金した場合の課税関係は？" 
-          answer="配当所得として総合課税（みなし配当）" 
-          explanation="生前に会社へ株式を譲渡した場合、資本金等の額を超える部分は「みなし配当」として総合課税の対象になります。所得税の最高税率（約55%）が適用される可能性があり、税負担が非常に重くなるため、通常は生前には行いません。" 
-          isCrucial={true}
-        >
-          {/* ここに比較図を挿入 */}
-          <TaxComparisonChart />
-        </QaItem>
-
-        <QaItem 
-          question="Ａさんの相続後に金庫株を活用するメリットは？" 
-          answer="承継意思のない相続人から会社が買い取ることで、手元に現金を残せる" 
-          explanation="後継者以外の相続人（Cさん、Dさん）が取得した株式をX社が買い取ることで、相続人は現金の形で財産を受け取れます。これにより、相続税の納税資金や、代償分割の資金を確保できます。" 
-        />
-
-        <QaItem 
-          question="相続人が取得した株式を金庫株として譲渡した場合の課税関係は？" 
-          answer="すべて譲渡所得としての分離課税（みなし配当課税の特例）" 
-          explanation="相続開始後、一定期間内に相続人が金庫株として発行会社に譲渡した場合は、みなし配当課税は適用されず、全額が譲渡所得（申告分離課税：20.315%）となります。生前に譲渡した場合と比較して、税負担が劇的に軽減されます。" 
-          isCrucial={true}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <QaItem 
-            question="みなし配当課税の特例を適用するための期限は？" 
-            answer="相続税の申告期限の翌日から3年以内" 
-            explanation="相続開始の日の翌日から起算して3年10ヶ月以内（＝相続税の申告期限から3年以内）に会社に譲渡する必要があります。" 
-          />
-          <QaItem 
-            question="みなし配当課税の特例と併用できる特例は？" 
-            answer="相続税の取得費加算の特例" 
-            explanation="譲渡した株式に対応する相続税額を、譲渡所得の計算上、取得費に加算できる特例です。みなし配当の特例と併用することで譲渡益をさらに圧縮し、税負担を最小限に抑えることが可能です。" 
-          />
-        </div>
-      </div>
-    );
-
-    // 4. FPの視点パネル
-    const FpPerspectivePanel = () => (
-      <div className="space-y-6 animate-fade-in">
-        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">FPの視点：提案と解決策のストーリー</h2>
-        
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-indigo-500 hover:shadow-md transition-shadow">
-          <h3 className="text-xl font-bold text-indigo-900 mb-3 flex items-center">
-            <span className="bg-indigo-100 text-indigo-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">1</span>
-            遺留分対策と経営権の安定化
-          </h3>
-          <p className="text-gray-700 mb-4">
-            Aさんの財産はX社関連資産が過半を占めるため、Fさんに株式を集中させると、Cさん・Dさんの遺留分（法定相続分の1/2）を侵害する可能性が極めて高い状況です。
-          </p>
-          <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
-            <h4 className="font-bold text-indigo-800 mb-2">💡 提案：遺留分に関する民法の特例</h4>
-            <ul className="list-disc list-inside space-y-2 text-sm text-gray-700">
-              <li><strong>除外合意：</strong> Fさんが贈与・相続で取得したX社株式を、遺留分算定基礎財産から<span className="text-red-600 font-bold bg-red-100 px-1">完全に除外</span>します。これにより後継者への株式集中が確実になります。</li>
-              <li><strong>固定合意：</strong> 遺留分算定基礎財産に算入する自社株の価額を、合意時の時価に<span className="text-red-600 font-bold bg-red-100 px-1">固定</span>します。将来Fさんの努力で株価が上昇しても、遺留分額は増えません。</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex justify-center my-2">
-          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-l-4 border-emerald-500 hover:shadow-md transition-shadow">
-          <h3 className="text-xl font-bold text-emerald-900 mb-3 flex items-center">
-            <span className="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">2</span>
-            非後継者への配慮と納税資金の確保
-          </h3>
-          <p className="text-gray-700 mb-4">
-            上記の「除外合意」を成立させるためには、Cさん・Dさんが納得するだけの「代償財産」を用意する必要があります。ここで<strong>金庫株の特例</strong>が活きてきます。
-          </p>
-          <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <h4 className="font-bold text-emerald-800 mb-2">💡 提案：事業承継税制＋金庫株特例のコンボ</h4>
-            <ol className="list-decimal list-inside space-y-3 text-sm text-gray-700">
-              <li>Aさんの保有株式のうち、<strong>事業承継税制（贈与税の納税猶予）</strong>の上限までFさんに生前贈与します。</li>
-              <li>残りの株式はAさんが保有し続け、相続発生時にCさん・Dさんに相続させます。</li>
-              <li>相続後3年10ヶ月以内に、Cさん・Dさんがその株式をX社に譲渡（金庫株化）します。</li>
-              <li className="bg-white p-2 rounded border border-emerald-200">
-                <span className="font-bold text-red-600">★効果：</span>みなし配当課税が回避され（一律20.315%）、さらに取得費加算の特例で税負担が最小化されます。Cさん・Dさんは手にした現金を納税資金や生活資金に充てることができ、円満な解決に繋がります。
-              </li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    );
-
-    // --- Main Application Component ---
     const App = () => {
-      const [activeTab, setActiveTab] = useState<TabType>('overview');
-
-      const renderContent = () => {
-        switch (activeTab) {
-          case 'overview': return <OverviewPanel />;
-          case 'swot': return <SwotPanel />;
-          case 'qa': return <QaPanel />;
-          case 'fp': return <FpPerspectivePanel />;
-          default: return <OverviewPanel />;
-        }
+      // Solarized Theme Colors for inline styles
+      const colors = {
+        base02: '#073642',
+        base00: '#657b83',
+        base2: '#eee8d5',
+        blue: '#268bd2',
+        cyan: '#2aa198',
+        green: '#859900',
+        yellow: '#b58900',
+        orange: '#cb4b16',
+        red: '#dc322f',
       };
 
       return (
-        <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-800">
-          {/* Sidebar */}
-          <div className="w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10 flex-shrink-0">
-            <div className="p-5 border-b border-slate-700 bg-slate-800">
-              <h1 className="text-lg font-bold leading-tight tracking-wide">FP1級 実技対策<br/><span className="text-blue-400 text-sm font-normal">事業承継・金庫株の活用</span></h1>
-            </div>
-            <nav className="flex-1 py-4 overflow-y-auto">
-              <ul className="space-y-1">
-                <li>
-                  <button onClick={() => setActiveTab('overview')} className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'overview' ? 'bg-blue-600 text-white border-r-4 border-blue-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
-                    <IconPieChart /> <span className="ml-3">設例概要・財産図解</span>
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => setActiveTab('swot')} className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'swot' ? 'bg-blue-600 text-white border-r-4 border-blue-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
-                    <span className="ml-3">SWOT分析</span>
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => setActiveTab('qa')} className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'qa' ? 'bg-blue-600 text-white border-r-4 border-blue-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
-                    <IconMessageCircle /> <span className="ml-3">Q&A・課税関係図</span>
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => setActiveTab('fp')} className={`w-full flex items-center px-6 py-3 text-sm font-medium transition-colors ${activeTab === 'fp' ? 'bg-blue-600 text-white border-r-4 border-blue-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}>
-                    <IconBriefcase /> <span className="ml-3">FPの視点・提案</span>
-                  </button>
-                </li>
-              </ul>
-            </nav>
-            <div className="p-4 bg-slate-950 text-xs text-slate-400 border-t border-slate-800">
-              <p className="mb-1 text-slate-300">試験範囲:</p>
-              <p>法人の承継対策</p>
-              <p>金庫株・遺留分特例</p>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto px-6 py-12 md:px-12 space-y-16">
+          
+          {/* Header */}
+          <header className="border-b-2 pb-6" style={{ borderColor: colors.base2 }}>
+            <p className="text-sm font-bold tracking-widest uppercase mb-2" style={{ color: colors.cyan }}>Case Study Report</p>
+            <h1 className="text-3xl md:text-4xl" style={{ color: colors.base02 }}>Aさん（70歳）の事業・資産承継対策</h1>
+            <p className="mt-2 text-lg" style={{ color: colors.base00 }}>テーマ：事業承継税制、金庫株（自己株式）の活用、遺留分特例</p>
+          </header>
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col overflow-hidden relative">
-            <header className="bg-white shadow-sm z-10 border-b border-gray-200">
-              <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-                <div>
-                  <p className="text-xs text-blue-600 font-bold tracking-wider uppercase mb-1">Case Study Analysis</p>
-                  <h2 className="text-xl font-bold text-gray-800">Aさん（70歳）の事業・資産承継対策</h2>
-                </div>
-                <div className="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">
-                  図解モード
-                </div>
+          {/* 1. FP目線全体像 */}
+          <section aria-labelledby="section-1">
+            <h2 id="section-1" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.blue }}>1. FP目線全体像</h2>
+            <div className="p-6 rounded-lg" style={{ backgroundColor: colors.base2 }}>
+              <p className="mb-4 text-base font-medium">
+                本設例の核心は、<strong>「優良な非上場株式（評価額1.68億円）を、いかに税負担を抑えつつ、遺留分トラブルなく後継者へ集中させるか」</strong>という点にあります。
+              </p>
+              <ul className="list-disc list-inside space-y-2">
+                <li><strong>経営権の確保：</strong> 事業承継税制（特例）を活用し、甥Fさんへの株式移転における贈与税を100%猶予。</li>
+                <li><strong>争族の防止：</strong> 長女・二女の遺留分侵害を防ぐため、民法特例（除外合意・固定合意）を適用し、株式の分散を遮断。</li>
+                <li><strong>資金の確保：</strong> 遺留分代償や納税資金の不足を補うため、相続発生後に非後継者が取得した株式を会社に買い取らせる（金庫株の特例）。これにより、法人の資金を活用した円満な財産承継を実現する。</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* 2. 5w1h分析 */}
+          <section aria-labelledby="section-2">
+            <h2 id="section-2" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.cyan }}>2. 5W1H分析</h2>
+            <div className="overflow-hidden border rounded-lg" style={{ borderColor: colors.base2 }}>
+              <table className="min-w-full text-left border-collapse">
+                <tbody className="divide-y" style={{ divideColor: colors.base2 }}>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>Who (誰が)</th><td className="px-6 py-4">Aさん（70歳・X社代表取締役社長）</td></tr>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>What (何を)</th><td className="px-6 py-4">甥Fさんへの事業承継と、非後継者（長女・二女）への資産承継・遺留分対策</td></tr>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>When (いつ)</th><td className="px-6 py-4">弟Eさんの体調不良もあり、可能な限り早期に</td></tr>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>Where (どこで)</th><td className="px-6 py-4">地方中核都市に所在するX社（電子部品製造業）</td></tr>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>Why (なぜ)</th><td className="px-6 py-4">高齢化・体調不良による引退のため。自社株評価が高く、そのままでは多額の税負担と遺留分トラブルが生じるため。</td></tr>
+                  <tr><th className="px-6 py-4 w-1/4 font-bold bg-opacity-50" style={{ backgroundColor: colors.base2, color: colors.base02 }}>How (どのように)</th><td className="px-6 py-4">事業承継税制の活用、金庫株（相続後の特例）による換金、遺留分に関する民法特例の適用により解決する。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* 3. SWOT分析 */}
+          <section aria-labelledby="section-3">
+            <h2 id="section-3" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.green }}>3. SWOT分析</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-5 border rounded-lg" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-3 flex items-center" style={{ color: colors.base02 }}><span className="mr-2" style={{ color: colors.green }}>S</span>強み (Strengths)</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>取引先から高く評価される技術力。業績好調。</li>
+                  <li>後継者Fさんが技術部門の中核であり承諾済。</li>
+                  <li>特例承継計画を県知事に提出・確認済。</li>
+                </ul>
               </div>
-            </header>
+              <div className="p-5 border rounded-lg" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-3 flex items-center" style={{ color: colors.base02 }}><span className="mr-2" style={{ color: colors.red }}>W</span>弱み (Weaknesses)</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>自社株と事業用不動産が財産の約55%を占める。</li>
+                  <li>長女・二女に経営の関心がなく、遺留分減殺請求等のトラブルリスク大。</li>
+                </ul>
+              </div>
+              <div className="p-5 border rounded-lg" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-3 flex items-center" style={{ color: colors.base02 }}><span className="mr-2" style={{ color: colors.blue }}>O</span>機会 (Opportunities)</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>事業承継税制（100％納税猶予）の活用。</li>
+                  <li>金庫株特例、取得費加算の特例の活用。</li>
+                  <li>遺留分特例（除外・固定合意）の活用。</li>
+                </ul>
+              </div>
+              <div className="p-5 border rounded-lg" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-3 flex items-center" style={{ color: colors.base02 }}><span className="mr-2" style={{ color: colors.orange }}>T</span>脅威 (Threats)</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>弟Eさんの体調不良。万一の際、Eさん保有株(20%)が分散し権利関係が複雑化するリスク。</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* 4. 資産/企業概要の図表 */}
+          <section aria-labelledby="section-4">
+            <h2 id="section-4" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.yellow }}>4. 資産・企業概要の図表</h2>
             
-            <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50 p-6 md:p-8">
-              <div className="max-w-4xl mx-auto pb-12">
-                {renderContent()}
+            <h3 className="text-xl mb-4 font-bold">Aさんの財産構成（総額 5億2,000万円）</h3>
+            {/* 視覚的バーチャート (CSSのみで描画) */}
+            <div className="w-full h-8 flex rounded overflow-hidden mb-4 bg-gray-200">
+              <div style={{ width: '32.3%', backgroundColor: colors.red }} className="h-full flex items-center justify-center text-white text-xs font-bold" title="X社株式">自社株 32%</div>
+              <div style={{ width: '23.1%', backgroundColor: colors.orange }} className="h-full flex items-center justify-center text-white text-xs font-bold" title="X社不動産">事業用地 23%</div>
+              <div style={{ width: '20.8%', backgroundColor: colors.blue }} className="h-full flex items-center justify-center text-white text-xs font-bold" title="現預金">現預金 21%</div>
+              <div style={{ width: '19.2%', backgroundColor: colors.green }} className="h-full flex items-center justify-center text-white text-xs font-bold" title="自宅">自宅 19%</div>
+              <div style={{ width: '4.6%', backgroundColor: colors.cyan }} className="h-full flex items-center justify-center text-white text-xs font-bold" title="上場株式"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {/* 資産テーブル */}
+              <table className="w-full text-sm border-collapse border" style={{ borderColor: colors.base2 }}>
+                <thead>
+                  <tr style={{ backgroundColor: colors.base2 }}><th className="p-2 text-left border" style={{ borderColor: colors.base2 }}>財産項目</th><th className="p-2 text-right border" style={{ borderColor: colors.base2 }}>評価額</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td className="p-2 border" style={{ borderColor: colors.base2 }}>現預金</td><td className="p-2 text-right border" style={{ borderColor: colors.base2 }}>1億800万円</td></tr>
+                  <tr><td className="p-2 border font-bold" style={{ borderColor: colors.base2, color: colors.red }}>X社株式 (80%)</td><td className="p-2 text-right border font-bold" style={{ borderColor: colors.base2, color: colors.red }}>1億6,800万円</td></tr>
+                  <tr><td className="p-2 border font-bold" style={{ borderColor: colors.base2, color: colors.orange }}>X社本社・工場土地</td><td className="p-2 text-right border font-bold" style={{ borderColor: colors.base2, color: colors.orange }}>1億2,000万円</td></tr>
+                  <tr><td className="p-2 border" style={{ borderColor: colors.base2 }}>自宅・上場株式</td><td className="p-2 text-right border" style={{ borderColor: colors.base2 }}>1億2,400万円</td></tr>
+                  <tr style={{ backgroundColor: colors.base2 }}><td className="p-2 border font-bold" style={{ borderColor: colors.base2 }}>合計</td><td className="p-2 text-right border font-bold" style={{ borderColor: colors.base2 }}>5億2,000万円</td></tr>
+                </tbody>
+              </table>
+
+              {/* 企業概要テーブル */}
+              <table className="w-full text-sm border-collapse border" style={{ borderColor: colors.base2 }}>
+                <thead>
+                  <tr style={{ backgroundColor: colors.base2 }}><th colSpan={2} className="p-2 text-center border" style={{ borderColor: colors.base2 }}>X社の概要（大会社）</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td className="p-2 border bg-opacity-30" style={{ borderColor: colors.base2, backgroundColor: colors.base2 }}>資本金</td><td className="p-2 border text-right" style={{ borderColor: colors.base2 }}>1,500万円</td></tr>
+                  <tr><td className="p-2 border bg-opacity-30" style={{ borderColor: colors.base2, backgroundColor: colors.base2 }}>従業員数</td><td className="p-2 border text-right" style={{ borderColor: colors.base2 }}>75人</td></tr>
+                  <tr><td className="p-2 border bg-opacity-30" style={{ borderColor: colors.base2, backgroundColor: colors.base2 }}>売上高</td><td className="p-2 border text-right" style={{ borderColor: colors.base2 }}>20億円</td></tr>
+                  <tr><td className="p-2 border bg-opacity-30" style={{ borderColor: colors.base2, backgroundColor: colors.base2 }}>純資産</td><td className="p-2 border text-right" style={{ borderColor: colors.base2 }}>5億円</td></tr>
+                  <tr><td className="p-2 border bg-opacity-30" style={{ borderColor: colors.base2, backgroundColor: colors.base2 }}>株価(純資産価額)</td><td className="p-2 border text-right" style={{ borderColor: colors.base2 }}>10,000円/株</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* 5. 節税効果の図表 */}
+          <section aria-labelledby="section-5">
+            <h2 id="section-5" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.orange }}>5. 節税効果の図表（金庫株の課税関係）</h2>
+            <p className="mb-4 text-sm">自社株を会社へ譲渡（金庫株化）するタイミングによる、税務上の決定的な違いを示します。</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* 生前譲渡 */}
+              <div className="border rounded-lg overflow-hidden" style={{ borderColor: colors.base2 }}>
+                <div className="p-3 text-center font-bold" style={{ backgroundColor: colors.base2, color: colors.red }}>❌ 生前譲渡 (原則)</div>
+                <div className="p-4 flex flex-col space-y-2 text-sm">
+                  <div className="w-full text-center p-2 rounded text-white font-bold" style={{ backgroundColor: colors.red }}>みなし配当 (総合課税: 最大約55%)<br/><span className="text-xs font-normal">※資本金等の額を超える部分</span></div>
+                  <div className="w-full text-center p-2 rounded text-white font-bold" style={{ backgroundColor: colors.blue }}>譲渡対価 (分離課税: 20.315%)<br/><span className="text-xs font-normal">※資本金等の額に相当する部分</span></div>
+                  <div className="w-full text-center p-2 rounded" style={{ backgroundColor: colors.base2 }}>取得費</div>
+                </div>
+                <div className="p-3 text-xs border-t" style={{ borderColor: colors.base2 }}>
+                  資本金等の額を超える部分は「配当」とみなされ、累進税率により税負担が極めて重くなる。
+                </div>
               </div>
-            </main>
-          </div>
+
+              {/* 相続後譲渡 */}
+              <div className="border rounded-lg overflow-hidden" style={{ borderColor: colors.base2 }}>
+                <div className="p-3 text-center font-bold" style={{ backgroundColor: colors.base2, color: colors.green }}>✅ 相続後譲渡 (特例適用)</div>
+                <div className="p-4 flex flex-col space-y-2 text-sm">
+                  <div className="w-full text-center p-4 rounded text-white font-bold h-full flex flex-col justify-center" style={{ backgroundColor: colors.green }}>
+                    全額が譲渡所得 (分離課税: 一律20.315%)
+                    <span className="text-xs font-normal mt-1 block">みなし配当課税は適用されない</span>
+                  </div>
+                  <div className="w-full text-center p-2 rounded relative" style={{ backgroundColor: colors.base2 }}>
+                    取得費
+                    <span className="absolute right-2 text-xs font-bold" style={{ color: colors.green }}>＋取得費加算の特例</span>
+                  </div>
+                </div>
+                <div className="p-3 text-xs border-t" style={{ borderColor: colors.base2 }}>
+                  相続税の申告期限から3年以内の譲渡であれば特例適用。税負担が劇的に軽減され、手元に資金を残せる。
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 6. Q&Aと実務解説 */}
+          <section aria-labelledby="section-6">
+            <h2 id="section-6" className="text-2xl border-l-4 pl-4 mb-6" style={{ borderColor: colors.magenta }}>6. Q&A と実務解説</h2>
+            <div className="space-y-6">
+              
+              <div className="pb-4 border-b" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-2" style={{ color: colors.base02 }}>Q1. 金庫株（自己株式）とはどのようなものですか？</h3>
+                <p className="pl-4 font-bold mb-2" style={{ color: colors.blue }}>A. 企業が自社の株式を買い戻して保有する株式（自己株式）のことです。</p>
+                <p className="pl-4 text-sm">【実務解説】 会社法や税法上の正式名称は「自己株式」です。FP実務では、非上場会社の事業承継において、相続人の納税資金捻出や、経営に無関心な親族からの株式集約（分散防止策）として頻繁に活用されます。</p>
+              </div>
+
+              <div className="pb-4 border-b" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-2" style={{ color: colors.base02 }}>Q2. 現時点で換金した場合（生前譲渡）の課税関係は？</h3>
+                <p className="pl-4 font-bold mb-2" style={{ color: colors.blue }}>A. 資本金等の額を超える部分は「配当所得として総合課税」となります。</p>
+                <p className="pl-4 text-sm">【実務解説】 会社からの払い戻しとみなされ「みなし配当」が発生します。最高税率（約55%）が適用される可能性があるため、通常、生前の自己株式取得は税務上極めて不利です。</p>
+              </div>
+
+              <div className="pb-4 border-b" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-2" style={{ color: colors.base02 }}>Q3. 相続後に換金した場合（特例適用）の課税関係は？</h3>
+                <p className="pl-4 font-bold mb-2" style={{ color: colors.blue }}>A. みなし配当課税は行われず「すべて譲渡所得（20.315%の分離課税）」となります。</p>
+                <p className="pl-4 text-sm">【実務解説】 「相続財産に係る非上場株式をその発行会社に譲渡した場合のみなし配当課税の特例」です。これにより、相続人は低い税率で手元に現金を残すことができ、納税資金や代償分割の資金確保が可能になります。</p>
+              </div>
+
+              <div className="pb-4 border-b" style={{ borderColor: colors.base2 }}>
+                <h3 className="font-bold text-lg mb-2" style={{ color: colors.base02 }}>Q4. 特例を適用するための期限と、併用できる特例は？</h3>
+                <p className="pl-4 font-bold mb-2" style={{ color: colors.blue }}>A. 期限は「相続税の申告期限から3年以内」。併用できるのは「取得費加算の特例」です。</p>
+                <p className="pl-4 text-sm">【実務解説】 相続開始の日の翌日から起算して3年10ヶ月以内に譲渡する必要があります。また、納付した相続税額の一部を譲渡所得の計算上「取得費」に加算できる特例と併用することで、譲渡益をさらに圧縮し、手取り額を最大化できます。</p>
+              </div>
+
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="pt-8 pb-4 text-center text-sm" style={{ color: colors.base1 }}>
+            <p>Generated for FP1 Practical Exam Preparation.</p>
+          </footer>
+
         </div>
       );
     };
