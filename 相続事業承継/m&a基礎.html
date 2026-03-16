@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FP1級実技対策ダッシュボード - 事業承継(M&A)</title>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- PropTypes (Rechartsの依存ライブラリ) -->
+    <script crossorigin src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+    <!-- Babel for TSX -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Recharts (安定版の2.x系にバージョンを固定) -->
+    <script crossorigin src="https://unpkg.com/recharts@2.12.0/umd/Recharts.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#005AAC', // デジタル庁ブルー風
+                        secondary: '#4B5563',
+                        surface: '#FFFFFF',
+                        background: '#F3F4F6',
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F3F4F6; color: #1F2937; }
+        .digital-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .digital-header {
+            border-bottom: 2px solid #005AAC;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: #111827;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/javascript">
+        // Register custom preset for TSX
+        Babel.registerPreset('tsx', {
+            presets: [
+                [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+                Babel.availablePresets['react']
+            ]
+        });
+    </script>
+
+    <script type="text/babel" data-presets="tsx">
+        const { useState } = React;
+        const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } = window.Recharts;
+
+        // --- 仮データ定義 ---
+        const companyValueData = [
+            { name: '簿価純資産', value: 10000 },
+            { name: '含み益（不動産等）', value: 2000 },
+            { name: 'のれん（営業権）', value: 5000 },
+        ];
+        const COLORS = ['#3B82F6', '#60A5FA', '#F59E0B'];
+
+        const taxSavingData = [
+            {
+                name: '退職金なし',
+                '手取額': 13540,
+                '譲渡益課税': 3460,
+                '退職所得税': 0,
+            },
+            {
+                name: '退職金5,000万円支給',
+                '手取額': 14450,
+                '譲渡益課税': 2040,
+                '退職所得税': 510,
+            }
+        ];
+
+        const qaData = [
+            {
+                q: "M&Aのメリットとデメリットは？",
+                user: "メリット：経営者の自由、従業員の就労確保。\nデメリット：経営方針の不一致などによる合併後の就労状況の変化。",
+                correct: "メリット：売り手は創業者利益の獲得、従業員の雇用維持。買い手は時間とリソースの節約、シナジー効果。\nデメリット：売り手は交渉の長期化。買い手は企業文化の不一致、のれん減損リスク。",
+                fp: "実務では、単なる「お金」だけでなく「従業員や取引先を守れるか」が経営者の最大の関心事です。買い手側のリスク（簿外債務やのれん減損）も理解しておくと、提案に深みが出ます。"
+            },
+            {
+                q: "中小企業のM&Aにおける譲渡価額の計算方法は？",
+                user: "類似業種比準方式",
+                correct: "時価純資産法 ＋ のれん代（営業権：実質利益の数年分など）",
+                fp: "【重要】類似業種比準方式は「親族内承継（税務署向け）」の評価額です。第三者へのM&Aでは、当事者間の合意による「時価」が基準となるため、区別して回答できるようにしましょう。"
+            },
+            {
+                q: "M＆Aで株式譲渡をする場合の課税関係は？",
+                user: "譲渡とみなし配当など",
+                correct: "個人の譲渡所得として分離課税（20.315%）",
+                fp: "【重要】第三者への売却は「譲渡所得」のみです。「みなし配当」が発生するのは、発行会社自身に買い取ってもらう場合（自己株式の取得）ですので、実技面接では引っ掛けに注意してください。"
+            },
+            {
+                q: "譲渡対価の一部を役員退職金として支給する節税効果と留意点は？",
+                user: "効果：退職所得控除の利用、譲渡価格の引き下げ。\n留意点：国税庁への事前届出。",
+                correct: "効果：法人の純資産減少により株価が下がり譲渡益税が減少。個人は退職所得控除と1/2課税により税負担が軽減される。\n留意点：不相当に高額な退職金は損金不算入となるリスクがある。",
+                fp: "節税ロジックの理解は完璧です！留意点について、事前届出は不要ですが、税務調査で否認されないよう「最終報酬月額×在任年数×功績倍率」の適正額の範囲内に収める必要がある旨を説明できるとベストです。"
+            }
+        ];
+
+        // --- コンポーネント ---
+        const SectionHeader = ({ title }) => (
+            <h2 className="digital-header">{title}</h2>
+        );
+
+        const Dashboard = () => {
+            return (
+                <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+                    <header className="mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">事業承継対策(M&A) ダッシュボード</h1>
+                        <p className="text-gray-600">FP1級実技試験向け ケーススタディ整理用フォーマット</p>
+                    </header>
+
+                    {/* 1. FP目線全体像 */}
+                    <section className="digital-card">
+                        <SectionHeader title="1. FP目線 全体像・課題解決方針" />
+                        <div className="bg-blue-50 border-l-4 border-primary p-4 rounded text-gray-800 leading-relaxed">
+                            <p className="mb-2"><strong>現状の課題：</strong> 後継者不在による事業継続リスク、および経営者個人のハッピーリタイアメント（老後資金の確保）。</p>
+                            <p className="mb-2"><strong>解決策の方向性：</strong> 第三者へのM&A（株式譲渡）を実行し、事業と従業員の雇用を維持する。その際、単に株式を譲渡するだけでなく、実行前に<strong>「役員退職金」を支給するスキーム</strong>を組み合わせる。</p>
+                            <p><strong>FPとしての提供価値：</strong> 法人（株価引き下げ）と個人（退職所得の優遇税制）の両面から税制上のメリットを最大化し、手取額を最適化する提案を行う。</p>
+                        </div>
+                    </section>
+
+                    {/* 2. 5W1H分析 */}
+                    <section className="digital-card">
+                        <SectionHeader title="2. 5W1H分析" />
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 border">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">要素</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">Who</td><td className="px-6 py-4">A社長（売り手・現経営者） と 同業他社B社（買い手）</td></tr>
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">What</td><td className="px-6 py-4">対象会社（自社）の全株式の譲渡 および 役員退職金の支給</td></tr>
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">When</td><td className="px-6 py-4">事業承継（M&A）の実行時</td></tr>
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">Where</td><td className="px-6 py-4">対象会社において</td></tr>
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">Why</td><td className="px-6 py-4">従業員の雇用維持、事業の存続、創業者利益の獲得（ハッピーリタイアメント）のため</td></tr>
+                                    <tr><td className="px-6 py-4 whitespace-nowrap font-bold text-gray-700 bg-gray-50">How</td><td className="px-6 py-4">退職金スキームを併用した株式譲渡により、法人・個人トータルでの税負担を軽減し手取額を最大化する</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    {/* 3. SWOT分析 */}
+                    <section className="digital-card">
+                        <SectionHeader title="3. SWOT分析 (対象会社)" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="border border-red-200 rounded p-4 bg-red-50">
+                                <h3 className="font-bold text-red-700 mb-2 border-b border-red-200 pb-1">Strengths (強み)</h3>
+                                <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+                                    <li>長年培った独自の技術力・ノウハウ</li>
+                                    <li>安定した優良な顧客基盤</li>
+                                    <li>※これらが「のれん代（営業権）」の源泉となる</li>
+                                </ul>
+                            </div>
+                            <div className="border border-blue-200 rounded p-4 bg-blue-50">
+                                <h3 className="font-bold text-blue-700 mb-2 border-b border-blue-200 pb-1">Weaknesses (弱み)</h3>
+                                <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+                                    <li>親族内・社内に適任の後継者が不在</li>
+                                    <li>経営者の高齢化による経営体力の低下</li>
+                                </ul>
+                            </div>
+                            <div className="border border-green-200 rounded p-4 bg-green-50">
+                                <h3 className="font-bold text-green-700 mb-2 border-b border-green-200 pb-1">Opportunities (機会)</h3>
+                                <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+                                    <li>同業他社（B社など）による事業拡大・買収ニーズ</li>
+                                    <li>業界再編による規模拡大のチャンス</li>
+                                </ul>
+                            </div>
+                            <div className="border border-yellow-200 rounded p-4 bg-yellow-50">
+                                <h3 className="font-bold text-yellow-700 mb-2 border-b border-yellow-200 pb-1">Threats (脅威)</h3>
+                                <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+                                    <li>社長の万が一（健康問題）による突然の事業停止リスク</li>
+                                    <li>競合他社の台頭による市場シェア低下</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* 4. 資産/企業概要の図表 */}
+                        <section className="digital-card mb-0">
+                            <SectionHeader title="4. 企業価値(譲渡価額)の構成イメージ" />
+                            <p className="text-sm text-gray-600 mb-4">第三者へのM&Aにおける株価は、税務上の評価ではなく「時価純資産＋のれん」で算定されることが多いです。（※単位：万円 仮置き）</p>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={companyValueData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={90}
+                                            paddingAngle={2}
+                                            dataKey="value"
+                                            label={({name, value}) => `${name}: ${value.toLocaleString()}`}
+                                        >
+                                            {companyValueData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip formatter={(value) => value.toLocaleString() + '万円'} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="text-center font-bold mt-2 bg-gray-100 p-2 rounded">
+                                総企業価値（譲渡価額目安）: 17,000万円
+                            </div>
+                        </section>
+
+                        {/* 5. 節税効果の図表 */}
+                        <section className="digital-card mb-0">
+                            <SectionHeader title="5. 退職金活用スキームの節税効果" />
+                            <p className="text-sm text-gray-600 mb-4">譲渡価額1.7億円、役員退職金5,000万円支給の場合の比較概算（※単位：万円 仮置きデータ）</p>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        data={taxSavingData}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip formatter={(value) => value.toLocaleString() + '万円'} />
+                                        <Legend />
+                                        <Bar dataKey="譲渡益課税" stackId="a" fill="#EF4444" name="税金(譲渡所得)" />
+                                        <Bar dataKey="退職所得税" stackId="a" fill="#F59E0B" name="税金(退職所得)" />
+                                        <Bar dataKey="手取額" stackId="a" fill="#10B981" name="手取額" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">※退職所得は分離課税、退職所得控除および1/2課税により税負担が極めて軽くなります。</p>
+                        </section>
+                    </div>
+
+                    {/* 6. Q&Aと実務解説 */}
+                    <section className="digital-card mt-6">
+                        <SectionHeader title="6. Q&AとFP実務解説 (復習用)" />
+                        <div className="space-y-4">
+                            {qaData.map((item, index) => (
+                                <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div className="bg-gray-100 px-4 py-3 font-bold text-gray-800 border-b border-gray-200 flex gap-2">
+                                        <span className="text-primary">Q{index + 1}.</span>
+                                        <span>{item.q}</span>
+                                    </div>
+                                    <div className="p-4 space-y-3 bg-white">
+                                        <div className="flex gap-2">
+                                            <span className="font-bold text-gray-500 w-12 shrink-0">回答:</span>
+                                            <p className="text-gray-700">{item.user}</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="font-bold text-green-600 w-12 shrink-0">正解:</span>
+                                            <p className="text-gray-800">{item.correct}</p>
+                                        </div>
+                                        <div className="flex gap-2 bg-blue-50 p-3 rounded mt-2">
+                                            <span className="font-bold text-primary w-12 shrink-0">FP解説:</span>
+                                            <p className="text-sm text-gray-800 leading-relaxed">{item.fp}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
+    </script>
+</body>
+</html>
