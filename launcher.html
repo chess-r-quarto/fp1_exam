@@ -7,13 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-primary: #38bdf8;
-            --accent-secondary: #fbbf24;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --anaconda-green: #43b02a;
+            --sidebar-bg: #2c3e50;
+            --main-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --btn-blue: #007bff;
+            --sidebar-hover: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -24,17 +26,202 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, rgba(251, 191, 36, 0.1) 0, transparent 50%);
-            color: var(--text-main);
-            min-height: 100vh;
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .sidebar-header span {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+            padding-top: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--anaconda-green);
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 0.9rem;
+        }
+
+        .top-bar span strong {
+            color: var(--anaconda-green);
+        }
+
+        .content-header {
+            padding: 30px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-header h1 {
+            font-size: 24px;
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .container {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Application Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            transition: box-shadow 0.2s;
+            text-align: center;
         }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            min-height: 4.5em; /* 3 lines roughly */
+        }
+
+        .btn-launch {
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-primary);
+            padding: 8px 0;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-launch:hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        .btn-launch.primary {
+            background: white;
+            color: var(--btn-blue);
+            border-color: var(--btn-blue);
+        }
+
+        .btn-launch.primary:hover {
+            background: var(--btn-blue);
+            color: white;
+        }
+
+        footer {
+            padding: 20px 30px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            background: white;
+            margin-top: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .sidebar { width: 60px; }
+            .sidebar-header span, .nav-item span { display: none; }
+            .nav-item { justify-content: center; padding: 15px 0; }
+        }
+    </style>
 
         header {
             width: 100%;
@@ -198,48 +385,71 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="FP1 Logo">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="launcher_assets/fp1_exam_logo_1773568922537.png" alt="Logo">
+            <span>ANACONDA</span>
         </div>
-        <h1>FP1 Exam Navigator</h1>
-        <p class="subtitle">学習モジュールを選択して開始してください</p>
-    </header>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>Environments</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>Learning</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span>Community</span>
+            </a>
+        </nav>
+    </aside>
 
-    <div class="container">
-        <!-- Tax Card -->
-        <div class="card">
-            <div class="card-icon">
-                <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon">
+    <main class="main-content">
+        <div class="top-bar">
+            <span>Applications on <strong>base (root)</strong></span>
+        </div>
+
+        <div class="content-header">
+            <h1>Home</h1>
+        </div>
+
+        <div class="container">
+            <!-- Tax Card -->
+            <div class="card">
+                <div class="card-icon">
+                    <img src="launcher_assets/tax_module_icon_1773568895923.png" alt="Tax Icon">
+                </div>
+                <h3 class="card-title">タックス</h3>
+                <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
+                <a href="タックス/" class="btn-launch primary">Launch</a>
             </div>
-            <h2 class="card-title">タックスプランニング</h2>
-            <p class="card-desc">所得税、法人税、消費税などの税務知識を体系的に学習します。</p>
-            <a href="タックス/" class="btn-launch">Open Folder</a>
-        </div>
 
-        <!-- Inheritance Card 1 -->
-        <div class="card">
-            <div class="card-icon">
-                <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
+            <!-- Inheritance Card 1 -->
+            <div class="card">
+                <div class="card-icon">
+                    <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
+                </div>
+                <h3 class="card-title">相続準備前の急逝</h3>
+                <p class="card-desc">相続対策における不測の事態への対応を学習します。</p>
+                <a href="相続事業承継/相続準備前の急逝.html" class="btn-launch primary">Launch</a>
             </div>
-            <h2 class="card-title">相続準備前の急逝</h2>
-            <p class="card-desc">相続対策における不測の事態への対応を学習します。</p>
-            <a href="相続事業承継/相続準備前の急逝.html" class="btn-launch">Launch Dashboard</a>
-        </div>
 
-        <!-- Inheritance Card 2 -->
-        <div class="card">
-            <div class="card-icon">
-                <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
+            <!-- Inheritance Card 2 -->
+            <div class="card">
+                <div class="card-icon">
+                    <img src="launcher_assets/inheritance_module_icon_1773568909833.png" alt="Inheritance Icon">
+                </div>
+                <h3 class="card-title">金庫株の活用</h3>
+                <p class="card-desc">事業承継における金庫株の戦略的活用を学習します。</p>
+                <a href="相続事業承継/金庫株の活用.html" class="btn-launch primary">Launch</a>
             </div>
-            <h2 class="card-title">金庫株の活用</h2>
-            <p class="card-desc">事業承継における金庫株の戦略的活用を学習します。</p>
-            <a href="相続事業承継/金庫株の活用.html" class="btn-launch">Launch Dashboard</a>
         </div>
-    </div>
 
-    <footer>
-        &copy; 2026 FP1 Exam Prep Dashboard | Powered by Antigravity
-    </footer>
+        <footer>
+            &copy; 2026 FP1 Exam Navigator | Anaconda Navigator Style Redesign
+        </footer>
+    </main>
 </body>
 </html>
