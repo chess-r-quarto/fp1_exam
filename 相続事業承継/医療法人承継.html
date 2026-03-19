@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xクリニック 承継分析ダッシュボード</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solarized: {
+                            base03: '#002b36',
+                            base02: '#073642',
+                            base01: '#586e75',
+                            base00: '#657b83',
+                            base0: '#839496',
+                            base1: '#93a1a1',
+                            base2: '#eee8d5',
+                            base3: '#fdf6e3',
+                            yellow: '#b58900',
+                            orange: '#cb4b16',
+                            red: '#dc322f',
+                            magenta: '#d33682',
+                            violet: '#6c71c4',
+                            blue: '#268bd2',
+                            cyan: '#2aa198',
+                            green: '#859900',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fdf6e3; /* Solarized base3 */
+            color: #657b83; /* Solarized base00 */
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4 {
+            color: #073642; /* Solarized base02 */
+        }
+        .section-container {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee8d5; /* Solarized base2 */
+        }
+        .table-header {
+            background-color: #eee8d5;
+            color: #586e75;
+        }
+        .qa-block {
+            page-break-inside: avoid;
+        }
+        /* Kindle/Print specific adjustments */
+        @media print {
+            body { background-color: white; }
+            .section-container { page-break-inside: avoid; border-bottom: none; margin-bottom: 1.5rem; }
+            .qa-block { border-color: #ccc; }
+        }
+    </style>
+</head>
+<body class="max-w-4xl mx-auto p-4 md:p-8 text-base md:text-lg">
+
+    <header class="mb-8 border-b-2 border-solarized-blue pb-4">
+        <p class="text-sm font-bold text-solarized-blue uppercase tracking-wider mb-1">FP1級 実技分析レポート</p>
+        <h1 class="text-3xl md:text-4xl font-extrabold mb-2">Xクリニック 承継分析ダッシュボード</h1>
+        <p class="text-solarized-base01">テーマ：経過措置型医療法人の出資持分問題と認定医療法人制度の活用</p>
+    </header>
+
+    <!-- 1. FP目線全体像 -->
+    <section class="section-container">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-yellow pl-3">
+            1. FP目線全体像
+        </h2>
+        <div class="bg-white p-5 rounded border border-solarized-base2 shadow-sm">
+            <p class="mb-3">
+                Xクリニックは2007年の医療法改正以前に設立された<strong>「経過措置型医療法人（持分あり）」</strong>です。配当が禁止されているため利益剰余金（2億円）が蓄積し、出資持分の価値が設立時の5倍に高騰しています。
+            </p>
+            <p class="mb-3">
+                この状況下で弟Eさんが退社に伴い持分の払戻しを請求した場合、法人は<strong>巨額の現金流出（4,000万円）による経営危機</strong>に直面し、Eさん自身にも<strong>多額のみなし配当課税</strong>が発生します。また、放置すれば後継者Cさんに<strong>巨額の相続税</strong>がのしかかります。
+            </p>
+            <p class="font-bold text-solarized-red">
+                【結論】<br>
+                これらの「時限爆弾（既存不適格によるリスク）」を回避するため、早急に国の特例である<strong>「認定医療法人制度」</strong>を活用し、税負担（法人への贈与税非課税、Cさんの相続税猶予・免除）なく「持分なし医療法人」へ移行することが最優先課題です。
+            </p>
+        </div>
+    </section>
+
+    <!-- 2. 5W1H分析 -->
+    <section class="section-container">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-cyan pl-3">
+            2. 5W1H分析
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse border border-solarized-base2 bg-white">
+                <tbody>
+                    <tr class="border-b border-solarized-base2">
+                        <th class="p-3 table-header w-24 font-bold border-r border-solarized-base2">Who</th>
+                        <td class="p-3">Aさん（68歳・理事長）、弟Eさん（65歳・理事）、長男Cさん（35歳・後継者）</td>
+                    </tr>
+                    <tr class="border-b border-solarized-base2">
+                        <th class="p-3 table-header font-bold border-r border-solarized-base2">What</th>
+                        <td class="p-3">「持分あり医療法人」から「持分なし医療法人」への円滑な移行と事業承継</td>
+                    </tr>
+                    <tr class="border-b border-solarized-base2">
+                        <th class="p-3 table-header font-bold border-r border-solarized-base2">When</th>
+                        <td class="p-3">現在進行形（弟Eさんの退社打診時、およびAさんの引退・相続発生前）</td>
+                    </tr>
+                    <tr class="border-b border-solarized-base2">
+                        <th class="p-3 table-header font-bold border-r border-solarized-base2">Where</th>
+                        <td class="p-3">大都市圏郊外のXクリニック</td>
+                    </tr>
+                    <tr class="border-b border-solarized-base2">
+                        <th class="p-3 table-header font-bold border-r border-solarized-base2">Why</th>
+                        <td class="p-3">持分払戻しによる法人の資金ショート回避、関係者の税負担（みなし配当・相続税・贈与税）を最小化するため</td>
+                    </tr>
+                    <tr>
+                        <th class="p-3 table-header font-bold border-r border-solarized-base2">How</th>
+                        <td class="p-3">「認定医療法人制度（移行計画の認定）」を活用し、特例税制の適用を受ける</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 3. SWOT分析 -->
+    <section class="section-container">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-green pl-3">
+            3. SWOT分析
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 border border-solarized-green border-t-4 rounded page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-green mb-2">強み (Strengths)</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>年商1億円、利益剰余金2億円の強固な財務基盤</li>
+                    <li>長男Cさんが後継者として承諾済み（後継者不在問題クリア）</li>
+                    <li>家族内で経営と所有が完結している</li>
+                </ul>
+            </div>
+            <div class="bg-white p-4 border border-solarized-red border-t-4 rounded page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-red mb-2">弱み (Weaknesses)</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>経過措置型（持分あり）のため、潜在的な払戻し債務を抱える</li>
+                    <li>内部留保の蓄積により出資持分の時価が高騰（1口1,000円→5,000円）</li>
+                    <li>配当が出せないため、資金を合法的に個人へ移転しにくい</li>
+                </ul>
+            </div>
+            <div class="bg-white p-4 border border-solarized-blue border-t-4 rounded page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-blue mb-2">機会 (Opportunities)</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>「認定医療法人制度」の特例税制（移行期限あり）が利用可能</li>
+                    <li>長男Cさんが既に同クリニックに勤務し、実務引き継ぎが容易</li>
+                </ul>
+            </div>
+            <div class="bg-white p-4 border border-solarized-orange border-t-4 rounded page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-orange mb-2">脅威 (Threats)</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>弟Eさんの権利行使による4,000万円の資金流出リスク</li>
+                    <li>Eさんへの重いみなし配当課税</li>
+                    <li>現状のまま相続が発生した場合のCさんの納税資金ショート</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 資産/企業概要の図表 -->
+    <section class="section-container">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-violet pl-3">
+            4. 資産/企業概要の図表
+        </h2>
+        
+        <div class="bg-white p-4 border border-solarized-base2 rounded mb-4">
+            <h3 class="font-bold text-lg mb-2">Xクリニック 財務要約</h3>
+            <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                <div class="flex-1 min-w-[120px] bg-solarized-base3 p-3 rounded text-center">
+                    <div class="text-solarized-base01 text-xs">年商</div>
+                    <div class="font-bold">1億円</div>
+                </div>
+                <div class="flex-1 min-w-[120px] bg-solarized-base3 p-3 rounded text-center">
+                    <div class="text-solarized-base01 text-xs">出資金 (元本)</div>
+                    <div class="font-bold">4,000万円</div>
+                </div>
+                <div class="flex-1 min-w-[120px] bg-solarized-base3 p-3 rounded text-center">
+                    <div class="text-solarized-base01 text-xs text-solarized-red">利益剰余金</div>
+                    <div class="font-bold text-solarized-red">2億円</div>
+                </div>
+                <div class="flex-1 min-w-[120px] bg-solarized-base3 p-3 rounded text-center">
+                    <div class="text-solarized-base01 text-xs text-solarized-red">純資産価額</div>
+                    <div class="font-bold text-solarized-red">5,000円 / 口</div>
+                </div>
+            </div>
+        </div>
+
+        <table class="w-full text-left border-collapse border border-solarized-base2 bg-white text-sm md:text-base">
+            <thead>
+                <tr class="table-header">
+                    <th class="p-2 md:p-3 border border-solarized-base2">出資者</th>
+                    <th class="p-2 md:p-3 border border-solarized-base2 text-right">出資割合</th>
+                    <th class="p-2 md:p-3 border border-solarized-base2 text-right">口数 (元本)</th>
+                    <th class="p-2 md:p-3 border border-solarized-base2 text-right">現在の時価評価額</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="p-2 md:p-3 border border-solarized-base2 font-bold">Aさん</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">80%</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">32,000口</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right font-bold text-solarized-red">1億6,000万円</td>
+                </tr>
+                <tr>
+                    <td class="p-2 md:p-3 border border-solarized-base2 font-bold">弟Eさん</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">20%</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">8,000口</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right font-bold text-solarized-red">4,000万円</td>
+                </tr>
+                <tr class="table-header font-bold">
+                    <td class="p-2 md:p-3 border border-solarized-base2">合計</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">100%</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">40,000口</td>
+                    <td class="p-2 md:p-3 border border-solarized-base2 text-right">2億円</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 5. 節税効果の図表 -->
+    <section class="section-container">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-magenta pl-3">
+            5. 節税効果の図表
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- シナリオA -->
+            <div class="bg-white p-4 border border-solarized-base2 rounded page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-red mb-3 pb-2 border-b border-solarized-base2">
+                    【現状維持の結末】持分払戻し請求を実行
+                </h3>
+                <ul class="space-y-3 text-sm md:text-base">
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">法人への影響</span><br>
+                        金庫から<span class="font-bold text-solarized-red">4,000万円の現金流出</span>。資金繰り悪化。
+                    </li>
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">Eさんの税務</span><br>
+                        払戻額4,000万円 － 出資元本800万円<br>
+                        ＝ <span class="font-bold text-solarized-red">みなし配当 3,200万円</span> (総合課税で重税)
+                    </li>
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">Cさんの承継</span><br>
+                        1億6,000万円の持分に対する巨額の相続税が発生。
+                    </li>
+                </ul>
+            </div>
+
+            <!-- シナリオB -->
+            <div class="bg-white p-4 border-2 border-solarized-green rounded shadow-sm relative page-break-inside-avoid">
+                <h3 class="font-bold text-solarized-green mb-3 pb-2 border-b border-solarized-green flex items-center justify-between">
+                    <span>【推奨プラン】持分放棄 ＋ 持分なしへ</span>
+                    <span class="bg-solarized-green text-white text-xs px-2 py-1 rounded">推奨</span>
+                </h3>
+                <ul class="space-y-3 text-sm md:text-base">
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">法人への影響</span><br>
+                        資金流出 <span class="font-bold text-solarized-green">ゼロ</span>。持分放棄による莫大な受贈益に対する<span class="font-bold text-solarized-green border-b border-solarized-green">贈与税が非課税</span>。
+                    </li>
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">Eさんの税務</span><br>
+                        持分を放棄するため、みなし配当課税は発生しない。（※別途、退職金等での報奨を検討）
+                    </li>
+                    <li>
+                        <span class="inline-block w-24 text-solarized-base01 font-bold">Cさんの承継</span><br>
+                        移行計画期間中の相続税が<span class="font-bold text-solarized-green">猶予</span>され、移行完了で<span class="font-bold text-solarized-green">免除</span>。
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Q&Aと実務解説 -->
+    <section class="section-container border-none">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2 border-l-4 border-solarized-orange pl-3">
+            6. Q&Aと実務解説
+        </h2>
+        <div class="space-y-4">
+            
+            <div class="qa-block bg-white rounded border border-solarized-base2">
+                <div class="font-bold p-3 md:p-4 bg-solarized-base3 border-b border-solarized-base2 rounded-t text-solarized-base03">
+                    Q: 医療法人の自社株評価で、一般企業と異なる点は？
+                </div>
+                <div class="p-3 md:p-4 text-sm md:text-base">
+                    <strong class="text-solarized-base02">A: 類似業種比準方式において「配当」をゼロ（要素から除外）して計算します。</strong><br>
+                    <span class="mt-2 block">医療法人は医療法によって剰余金の配当が禁止されています。そのため、評価要素（配当・利益・純資産）のうち、配当金額は常にゼロとなります。（比準割合の計算は、利益と純資産の2要素で行います）</span>
+                </div>
+            </div>
+
+            <div class="qa-block bg-white rounded border border-solarized-base2">
+                <div class="font-bold p-3 md:p-4 bg-solarized-base3 border-b border-solarized-base2 rounded-t text-solarized-base03">
+                    Q: 「みなし配当」とは具体的にどのような計算になりますか？
+                </div>
+                <div class="p-3 md:p-4 text-sm md:text-base">
+                    <strong class="text-solarized-base02">A: 【法人の純資産額に応じた払戻金額】 － 【設立時の出資元本】 ＝ みなし配当所得</strong><br>
+                    <span class="mt-2 block">株式会社の解散や自己株式の取得時と同様です。法人内部に蓄積された「利益剰余金」が、持分の払戻しという形で実質的に個人に還元されたとみなされるため、譲渡所得ではなく「配当所得」として総合課税（最大約55%）の対象となります。</span>
+                </div>
+            </div>
+
+            <div class="qa-block bg-white rounded border border-solarized-base2">
+                <div class="font-bold p-3 md:p-4 bg-solarized-base3 border-b border-solarized-base2 rounded-t text-solarized-base03">
+                    Q: 実務上、弟Eさんへの退職金はどうすべきですか？
+                </div>
+                <div class="p-3 md:p-4 text-sm md:text-base">
+                    <strong class="text-solarized-base02">A: 役員退職給与規程に基づく適正額を支給し、税負担を軽減します。</strong><br>
+                    <span class="mt-2 block">認定医療法人制度を使って持分を「放棄」してもらう代わりに、Eさんの長年の貢献に対しては「退職金」として支給するのが実務上のセオリーです。退職所得は分離課税かつ退職所得控除や1/2課税の恩恵があるため、みなし配当として受け取るよりも個人の税負担が劇的に軽くなります。（ただし、過大な退職金は税務否認されるリスクがあるため、適正額の算定が必要です）</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="mt-8 text-center text-sm text-solarized-base01 pb-8">
+        <p>FP1級 知識整理用ダッシュボード - Static Read Mode.</p>
+    </footer>
+
+</body>
+</html>
