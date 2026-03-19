@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FP1級実技 27法人の承継対策⑧ 名義株の整理</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solarized: {
+              base03: '#002b36',
+              base02: '#073642',
+              base01: '#586e75',
+              base00: '#657b83',
+              base0: '#839496',
+              base1: '#93a1a1',
+              base2: '#eee8d5',
+              base3: '#fdf6e3',
+              yellow: '#b58900',
+              orange: '#cb4b16',
+              red: '#dc322f',
+              magenta: '#d33682',
+              violet: '#6c71c4',
+              blue: '#268bd2',
+              cyan: '#2aa198',
+              green: '#859900',
+            }
+          },
+          fontFamily: {
+            sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel for in-browser JSX/TSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Custom Babel Preset Setup for TSX -->
+  <script>
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+
+  <style>
+    /* Kindle/E-Ink向けのベーススタイル設定 */
+    body {
+      background-color: #fdf6e3; /* Solarized Light background */
+      color: #073642; /* Solarized base02 for high contrast text */
+      line-height: 1.6;
+    }
+    
+    /* 学術論文(booktabs)ライクなシンプルなテーブルスタイル */
+    .simple-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+    .simple-table th, .simple-table td {
+      text-align: left;
+      padding: 0.75rem 0.5rem;
+    }
+    .simple-table th {
+      border-top: 2px solid #073642;
+      border-bottom: 1px solid #073642;
+      font-weight: bold;
+      color: #002b36;
+    }
+    .simple-table tr:last-child td {
+      border-bottom: 2px solid #073642;
+    }
+    .simple-table tbody tr {
+      border-bottom: 1px solid #eee8d5; /* base2 */
+    }
+    .simple-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    /* Kindle等での印刷・PDF化時の改ページ制御 */
+    @media print {
+      .page-break-before { page-break-before: always; }
+      .avoid-break { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="antialiased max-w-4xl mx-auto px-4 py-8 md:px-8 md:py-12">
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="tsx">
+    // --- Data Definitions ---
+
+    const overviewData = {
+      title: "FP目線全体像：名義株の整理と事業承継",
+      content: "X社は業績好調で資金的余裕もある非上場企業であり、経営のトップは既にAさん（72歳）から長男Dさん（45歳）へと移行済みです。事業承継における最大のボトルネックは「株式の移転」が完了していない点、特に発行済株式の30%が創業メンバー名義の「名義株」として放置されている点にあります。\n\n名義株を放置したままAさんや名義人が死亡して相続が発生すると、真の所有者が誰であるかを巡り、親族間で深刻なトラブル（経営権の分散リスク）に発展する恐れがあります。したがって、FPとしては、Aさんが健在なうちに真の所有者であるAさんへ名義を戻し（権利関係の明確化）、その後、自社株評価額の引き下げ策などを講じながらDさんへ計画的に移転するプロセスを提案する必要があります。その際、名義変更に伴う税務署からの不測の「贈与税課税」を回避するため、合意書（確認書）の作成等、慎重な実務対応が求められます。"
+    };
+
+    const analysis5W1H = [
+      { key: "Who (誰が)", value: "Aさん（72歳・代表取締役会長）が" },
+      { key: "Whom (誰に)", value: "長男Dさん（45歳・代表取締役社長）へ" },
+      { key: "What (何を)", value: "Aさん名義の株式70%と、他人名義の株式30%（名義株）を" },
+      { key: "When (いつ)", value: "Aさんが健在なうちに" },
+      { key: "Why (なぜ)", value: "事業承継を完了させ、経営から完全に身を引きたいから" },
+      { key: "How (どのように)", value: "名義株の権利関係を明確化し、贈与税等の税務リスクを回避しながら移転する" },
+    ];
+
+    const swotData = [
+      { category: "強み (Strengths)", description: "業績好調、資金的余裕あり。長男Dさんへの経営権（意思決定権限）の移行は既に完了している。" },
+      { category: "弱み (Weaknesses)", description: "株式の30%が創業メンバー名義（他人名義）のまま放置されており、権利関係が不明確である。" },
+      { category: "機会 (Opportunities)", description: "当面は増収増益予想であり、積極的な人材確保・設備投資を計画できる事業環境にある。" },
+      { category: "脅威 (Threats)", description: "このまま放置してAさんや名義人が死亡した場合、相続人との間で株式の帰属を巡るトラブル（経営権の分散リスク）が生じる恐れがある。" }
+    ];
+
+    const companyData = [
+      { label: "企業名", value: "X株式会社（非上場会社）" },
+      { label: "業種", value: "機械部品製造業" },
+      { label: "資本金", value: "1,000万円" },
+      { label: "会社規模", value: "中会社の大" },
+      { label: "従業員数", value: "60人" },
+      { label: "売上高 / 経常利益", value: "12億円 / 6,000万円" },
+      { label: "純資産", value: "1億6,000万円" },
+      { label: "発行済株式総数", value: "2万株" },
+      { label: "株主構成", value: "Aさん100%（そのうち他人名義30%）" },
+    ];
+
+    const taxEffectData = [
+      { 
+        action: "現状放置（何もしない）", 
+        risk: "相続発生時、名義人の親族から株式の所有権や配当を主張されるリスク。Dさんへの円滑な事業承継が困難になる。",
+        taxEffect: "評価額上昇により将来の相続税負担が増加する可能性。"
+      },
+      { 
+        action: "Aさんが名義人から株式を「買い取る」", 
+        risk: "本来Aさんの所有物であるため、買取資金の支払いはAさんから名義人への「贈与」とみなされるリスクがある。",
+        taxEffect: "名義人に不測の贈与税が課税される恐れ。またAさんの無駄な資金流出。"
+      },
+      { 
+        action: "単なる「名義変更」のみを行う", 
+        risk: "税務署から「名義人からAさんへの無償譲渡（贈与）」と認定されるリスクがある。",
+        taxEffect: "Aさんに多額の贈与税が課税される恐れ。"
+      },
+      { 
+        action: "【適切な実務】「確認書」を作成し名義変更", 
+        risk: "名義人の協力が得られない場合は法的手続きが必要となる。",
+        taxEffect: "「当初から実質所有者はAさんである」ことを書面で明確にするため、贈与税は非課税（課税対象外）。安全にAさん名義へ戻せる。"
+      }
+    ];
+
+    const qaData = [
+      {
+        question: "1. 名義株とは何ですか？",
+        userAnswer: "株主名簿と実所有者が異なる株式です。",
+        correctAnswer: "株主の実質的な所有者と、会社の株主名簿に掲載されている株主が異なる株式のことを指します。",
+        commentary: "実務上、過去の商法（発起人7人規制等）の影響で名義を借りて設立された法人の株式が、そのまま放置されているケースが散見されます。表面上の名簿と実態が乖離している状態です。"
+      },
+      {
+        question: "2. 名義株にはどのような問題点がありますか？",
+        userAnswer: "名義貸しの状態であり、その所有権について不安定です。未登記土地と同様の所有権トラブルがリスクです。事業承継時に不透明な株式があると、信用力問題があり、各種取引で不利な場合もあります。",
+        correctAnswer: "名義を貸した人やその相続人が経営への干渉等により事業承継の支障にもなることや、M&Aなど株式の売却の際の障壁となることが考えられます。",
+        commentary: "FP試験の記述では「相続発生時のトラブル（名義人の相続人からの権利主張）」「経営への干渉」「M&A時のデューデリジェンス（DD）での障害」の3点が主なキーワードとなります。"
+      },
+      {
+        question: "3. 保有している他人名義の株式はどうすればよいですか？",
+        userAnswer: "名義変更、必要に応じて買取により、所有者と名簿を一致させることが望ましいです。",
+        correctAnswer: "本当の所有者を確認することで権利関係を明確にし、名義株式の名義変更を行う必要があります。",
+        commentary: "「買取」という表現は避けるべきです。実質的所有者は既にAさんであるため、買い取る（対価を払う）ことは論理矛盾となり、税務上不利な扱い（贈与認定）を受ける原因となります。あくまで「真実の所有者への名義の書き換え」を行います。"
+      },
+      {
+        question: "4. 名義株式の名義変更の際に、税務的に気を付けるべきポイントはありますか？",
+        userAnswer: "無償で名義変更する場合は、贈与税の課税を回避するためにも、もともと株式が実質株主の財産であることを確認する「確認書」を作成し、名義株主に記載してもらっておくことが必要です。",
+        correctAnswer: "贈与税の課税を防ぐために、名義株主の協力が得られる場合は、株主名義変更に関する確認書を作成することなどが考えられます。",
+        commentary: "満点の回答です。税務署に対し「贈与による移転ではない」ことを証明するため、当事者間で「出資の経緯、配当の受領状況、株券の管理状況」等を記した確認書（合意書）を残すことが実務上のセオリーです。"
+      }
+    ];
+
+    // --- Components ---
+
+    const SectionTitle = ({ children, number }) => (
+      <h2 className="text-xl md:text-2xl font-bold text-solarized-base03 mt-12 mb-6 border-b-2 border-solarized-base1 pb-2 avoid-break flex items-baseline gap-2">
+        <span className="text-solarized-blue text-lg">{number}.</span>
+        {children}
+      </h2>
+    );
+
+    const Dashboard = () => {
+      return (
+        <div className="text-solarized-base02">
+          
+          <header className="mb-12 avoid-break">
+            <h1 className="text-2xl md:text-3xl font-bold text-solarized-base03 mb-4 leading-tight">
+              【1級実技】27 法人の承継対策⑧ 名義株の整理
+            </h1>
+            <p className="text-solarized-base01 text-sm border-l-4 border-solarized-yellow pl-3">
+              FP Camp 練習問題 ダッシュボード形式
+            </p>
+          </header>
+
+          {/* 1. FP目線全体像 */}
+          <section>
+            <SectionTitle number="1">FP目線全体像</SectionTitle>
+            <div className="prose prose-solarized max-w-none text-solarized-base02 leading-loose">
+              {overviewData.content.split('\n\n').map((paragraph, idx) => (
+                <p key={idx} className="mb-4">{paragraph}</p>
+              ))}
+            </div>
+          </section>
+
+          {/* 2. 5W1H分析 */}
+          <section>
+            <SectionTitle number="2">5W1H分析</SectionTitle>
+            <table className="simple-table">
+              <thead>
+                <tr>
+                  <th className="w-1/4">項目</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analysis5W1H.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="font-medium whitespace-nowrap">{item.key}</td>
+                    <td>{item.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 3. SWOT分析 */}
+          <section>
+            <SectionTitle number="3">SWOT分析</SectionTitle>
+            <table className="simple-table">
+              <thead>
+                <tr>
+                  <th className="w-1/4">カテゴリー</th>
+                  <th>状況・課題</th>
+                </tr>
+              </thead>
+              <tbody>
+                {swotData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="font-medium">{item.category}</td>
+                    <td>{item.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 4. 資産/企業概要の図表 */}
+          <section className="page-break-before">
+            <SectionTitle number="4">資産 / 企業概要</SectionTitle>
+            <table className="simple-table">
+              <thead>
+                <tr>
+                  <th className="w-1/3">項目</th>
+                  <th>詳細データ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {companyData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="font-medium">{item.label}</td>
+                    <td>{item.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 5. 節税（リスク回避）効果の図表 */}
+          <section>
+            <SectionTitle number="5">名義株整理における実務対応と税務リスク</SectionTitle>
+            <table className="simple-table">
+              <thead>
+                <tr>
+                  <th className="w-1/4">対応策</th>
+                  <th className="w-1/3">懸念されるリスク・問題点</th>
+                  <th>税務上の影響（効果）</th>
+                </tr>
+              </thead>
+              <tbody>
+                {taxEffectData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="font-medium">{item.action}</td>
+                    <td className="text-sm">{item.risk}</td>
+                    <td className="text-sm">{item.taxEffect}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          {/* 6. Q&Aと実務解説 */}
+          <section className="page-break-before">
+            <SectionTitle number="6">Q&Aと実務解説</SectionTitle>
+            <div className="space-y-8">
+              {qaData.map((qa, idx) => (
+                <div key={idx} className="avoid-break bg-solarized-base2/30 p-5 border border-solarized-base2">
+                  <h3 className="text-lg font-bold text-solarized-blue mb-4">{qa.question}</h3>
+                  
+                  <div className="mb-4">
+                    <div className="text-sm font-bold text-solarized-base01 mb-1">あなたの回答:</div>
+                    <div className="bg-solarized-base3 p-3 text-solarized-base02 border-l-4 border-solarized-base1 text-sm">
+                      {qa.userAnswer}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <div className="text-sm font-bold text-solarized-base01 mb-1">模範解答:</div>
+                    <div className="bg-solarized-base3 p-3 text-solarized-base02 border-l-4 border-solarized-green text-sm">
+                      {qa.correctAnswer}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-solarized-base2">
+                    <div className="text-sm font-bold text-solarized-yellow mb-1 flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                      実務解説
+                    </div>
+                    <div className="text-sm leading-relaxed text-solarized-base02">
+                      {qa.commentary}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Dashboard />);
+  </script>
+</body>
+</html>
