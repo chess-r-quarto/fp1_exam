@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP1級実技 設例分析ダッシュボード（法人の承継対策）</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <style>
+    /* Solarized Light Theme & Typography overrides for Quarto-like feel */
+    body {
+      background-color: #fdf6e3; /* Solarized base3 */
+      color: #002b36; /* Solarized base03 */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+    }
+    
+    /* Document Container */
+    #document-container {
+      max-width: 64rem; /* max-w-4xl */
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      #document-container {
+        padding: 1rem;
+      }
+    }
+
+    h1, h2, h3, h4 {
+      color: #073642; /* Solarized base02 */
+      font-weight: 700;
+    }
+
+    /* Print / E-ink optimizations */
+    @media print {
+      body {
+        background-color: white;
+        color: black;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+
+  <!-- Tailwind config for Solarized colors -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solarized: {
+              base03: '#002b36',
+              base02: '#073642',
+              base01: '#586e75',
+              base00: '#657b83',
+              base0: '#839496',
+              base1: '#93a1a1',
+              base2: '#eee8d5',
+              base3: '#fdf6e3',
+              yellow: '#b58900',
+              orange: '#cb4b16',
+              red: '#dc322f',
+              magenta: '#d33682',
+              violet: '#6c71c4',
+              blue: '#268bd2',
+              cyan: '#2aa198',
+              green: '#859900',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Register custom Babel preset for TSX -->
+  <script type="text/javascript">
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+
+  <!-- Main Application Logic -->
+  <script type="text/babel" data-presets="tsx">
+    
+    // --- Components --- //
+
+    const Section = ({ id, title, children }) => (
+      <section id={id} className="mb-12 page-break-inside-avoid">
+        <h2 className="text-2xl border-b-2 border-solarized-base2 pb-2 mb-6 text-solarized-base02">
+          {title}
+        </h2>
+        <div className="text-solarized-base03">
+          {children}
+        </div>
+      </section>
+    );
+
+    const Table = ({ headers, rows }) => (
+      <div className="overflow-x-auto mb-6">
+        <table className="min-w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b-2 border-solarized-base1 bg-solarized-base2 bg-opacity-30">
+              {headers.map((h, i) => (
+                <th key={i} className="py-3 px-4 text-sm font-bold text-solarized-base02">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i} className="border-b border-solarized-base2 hover:bg-solarized-base2 hover:bg-opacity-20 transition-colors">
+                {row.map((cell, j) => (
+                  <td key={j} className="py-3 px-4 text-sm align-top">{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+
+    // --- Content Sections --- //
+
+    const Section1_Overview = () => (
+      <Section id="overview" title="1. FP目線全体像">
+        <p className="mb-4 leading-relaxed">
+          本事例は、業績好調な非上場企業のオーナー社長（Aさん）から、後継者である長男（Cさん）への円滑な事業承継と、他の推定相続人（妻B、長女D、二男E）への配慮（争族対策・代償分割）を両立させる典型的なケースです。
+        </p>
+        <p className="leading-relaxed bg-solarized-base2 bg-opacity-50 p-4 rounded-md border-l-4 border-solarized-blue">
+          <strong>FPとしての重要ミッション：</strong><br />
+          総資産（9億9,000万円）の大部分を自社株式（5億円）および事業用資産（1億4,000万円）が占めています。無対策での相続は、長男Cさんの経営権を脅かす「遺留分侵害リスク」や、「多額の相続税負担リスク」を引き起こします。そのため、<strong>①「事業承継税制」による税負担の軽減（税法）</strong>と、<strong>②「遺留分に関する民法の特例」による自社株の分散防止（民法）</strong>を車の両輪として提案し、さらに現預金や生命保険を活用した包括的なプランニングが求められます。
+        </p>
+      </Section>
+    );
+
+    const Section2_5W1H = () => (
+      <Section id="5w1h" title="2. 5W1H分析">
+        <Table 
+          headers={["要素", "内容"]}
+          rows={[
+            [<strong>Who</strong>, "Aさん（70歳・電気機械器具製造業を営む非上場X社の創業社長）"],
+            [<strong>What</strong>, "長男Cさんへの事業承継（X社株式・本社土地の移転）、他の子への資金援助、争族対策"],
+            [<strong>When</strong>, "自身の体調不安もあるため、できるだけ早期に（生前に完了させたい）"],
+            [<strong>Where</strong>, "X株式会社の経営権、およびAさんの相続財産全体において"],
+            [<strong>Why</strong>, "経営が安定しているX社を第一線で活躍するCさんに円滑に引き継ぎつつ、遺産分割で家族がもめないようにするため"],
+            [<strong>How</strong>, "事業承継税制、遺留分に関する民法の特例、生命保険の活用、遺言書の作成などを通じてバランスをとる"]
+          ]}
+        />
+      </Section>
+    );
+
+    const Section3_SWOT = () => (
+      <Section id="swot" title="3. SWOT分析">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border border-solarized-base2 p-4 rounded-md bg-white">
+            <h3 className="font-bold text-solarized-green mb-3 border-b border-solarized-base2 pb-1">強み (Strengths)</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>X社の業績は順調で、技術力に対する評価が高い</li>
+              <li>余剰資金5億円以上で経営基盤が安定</li>
+              <li>後継者(長男)の経営能力や人望が厚い</li>
+              <li>Aさん個人の現預金が豊富（1億8,000万円）</li>
+            </ul>
+          </div>
+          <div className="border border-solarized-base2 p-4 rounded-md bg-white">
+            <h3 className="font-bold text-solarized-red mb-3 border-b border-solarized-base2 pb-1">弱み (Weaknesses)</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>Aさんの健康不安（時間的猶予の少なさ）</li>
+              <li>自社株（5億円）や本社土地（1.4億円）の評価額が高額</li>
+              <li>長男へ財産を集中させると、他の兄弟の遺留分を侵害する</li>
+            </ul>
+          </div>
+          <div className="border border-solarized-base2 p-4 rounded-md bg-white">
+            <h3 className="font-bold text-solarized-blue mb-3 border-b border-solarized-base2 pb-1">機会 (Opportunities)</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>事業承継税制の活用（贈与税・相続税の納税猶予/免除）</li>
+              <li>民法特例（除外合意等）の活用による遺留分トラブル防止</li>
+              <li>生命保険を活用した代償資金の準備や非課税枠の活用</li>
+            </ul>
+          </div>
+          <div className="border border-solarized-base2 p-4 rounded-md bg-white">
+            <h3 className="font-bold text-solarized-orange mb-3 border-b border-solarized-base2 pb-1">脅威 (Threats)</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>無対策相続による自社株分散、経営権の不安定化</li>
+              <li>遺留分侵害額請求によるキャッシュアウト（事業継続困難）</li>
+              <li>Aさんの意思能力喪失による対策実行不可リスク</li>
+            </ul>
+          </div>
+        </div>
+      </Section>
+    );
+
+    const Section4_Assets = () => (
+      <Section id="assets" title="4. 資産/企業概要の図表">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h4 className="font-bold text-sm mb-2 text-solarized-base01">Aさんの所有財産の概要</h4>
+            <Table 
+              headers={["資産項目", "相続税評価額"]}
+              rows={[
+                ["1. 現預金", "1億8,000万円"],
+                ["2. X社株式", "5億円"],
+                ["3. 自宅", "9,000万円"],
+                ["4. X社本社土地 (400㎡)", "1億4,000万円"],
+                ["5. 賃貸アパート", "8,000万円"],
+                [<strong className="text-solarized-base03">合計</strong>, <strong className="text-solarized-base03">9億9,000万円</strong>]
+              ]}
+            />
+            <p className="text-xs text-solarized-base01 mt-1">※土地は小規模宅地等の評価減適用前</p>
+          </div>
+          
+          <div>
+            <h4 className="font-bold text-sm mb-2 text-solarized-base01">親族・企業関係図</h4>
+            <div className="bg-white p-4 border border-solarized-base2 rounded-md font-mono text-sm overflow-x-auto whitespace-pre">
+{`【被相続人・配偶者】
+ Aさん(70歳) ＝＝ 妻Bさん(70歳)
+ (X社社長)      (自宅で同居)
+      │
+【子（推定相続人）】
+ ├─ 長男Cさん(45歳)・専務 [後継者]
+ │   └─ 孫 (持家に居住)
+ │
+ ├─ 長女Dさん
+ │   └─ 孫2名 (借上げ社宅に居住)
+ │
+ └─ 二男Eさん
+     (賃貸マンションに居住)
+
+【X株式会社】
+ 非上場・電気機械器具製造業
+ 創業約40年 / 余剰資金5億円以上`}
+            </div>
+          </div>
+        </div>
+      </Section>
+    );
+
+    const Section5_Effects = () => (
+      <Section id="effects" title="5. 制度活用による効果図解（税務・法務）">
+        <p className="mb-4 text-sm">本事例の解決には、「税負担の回避（事業承継税制）」と「民法上の権利対策（遺留分特例）」の両輪が必要です。</p>
+        
+        <div className="space-y-8">
+          
+          {/* 法務：除外合意 */}
+          <div className="border border-solarized-base2 bg-white p-5 rounded-md">
+            <h3 className="font-bold text-solarized-magenta mb-4">法務の対策：遺留分に関する民法特例（除外合意）の効果</h3>
+            <p className="text-sm mb-4">贈与された自社株式（5億円）を、他の相続人の遺留分計算の基礎財産から<strong>完全に除外</strong>し、後継者を守ります。</p>
+            
+            <div className="flex flex-col md:flex-row items-center gap-4 text-sm">
+              <div className="flex-1 w-full border border-solarized-base1 p-3 rounded">
+                <div className="text-center font-bold mb-2">原則（特例なし）</div>
+                <div className="bg-solarized-base2 p-2 mb-1 text-center">自社株式 5億円</div>
+                <div className="bg-solarized-base2 p-2 text-center">その他の財産 4.9億円</div>
+                <div className="mt-2 text-center text-xs text-solarized-red font-bold">遺留分計算対象：9.9億円</div>
+              </div>
+              
+              <div className="text-solarized-base01 text-2xl font-bold">➔</div>
+              
+              <div className="flex-1 w-full border-2 border-solarized-magenta p-3 rounded bg-pink-50">
+                <div className="text-center font-bold text-solarized-magenta mb-2">除外合意 適用後</div>
+                <div className="bg-gray-200 text-gray-400 p-2 mb-1 text-center line-through">自社株式 5億円 (除外)</div>
+                <div className="bg-solarized-base2 p-2 text-center">その他の財産 4.9億円</div>
+                <div className="mt-2 text-center text-xs text-solarized-magenta font-bold">遺留分計算対象：4.9億円のみに縮減</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 税務：事業承継税制 */}
+          <div className="border border-solarized-base2 bg-white p-5 rounded-md">
+            <h3 className="font-bold text-solarized-blue mb-4">税務の対策：事業承継税制（特例措置）の効果</h3>
+            <p className="text-sm mb-4">5億円の自社株式に係る多額の贈与税・相続税の納税が<strong>100%猶予（実質免除）</strong>されます。</p>
+            
+            <div className="flex flex-col md:flex-row items-end gap-6 text-sm">
+              <div className="flex-1 w-full flex flex-col items-center">
+                <div className="w-full bg-solarized-red h-32 flex items-center justify-center text-white font-bold rounded-t">多額の税負担</div>
+                <div className="w-full bg-solarized-base2 p-2 text-center border border-solarized-base1 rounded-b">
+                  <div className="font-bold">原則（特例なし）</div>
+                  <div className="text-xs">現金流出による経営圧迫</div>
+                </div>
+              </div>
+              
+              <div className="flex-1 w-full flex flex-col items-center">
+                <div className="w-full border-2 border-dashed border-solarized-blue h-32 flex items-center justify-center text-solarized-blue font-bold rounded-t bg-blue-50">
+                  納税額 100%猶予
+                </div>
+                <div className="w-full bg-solarized-base2 p-2 text-center border-2 border-solarized-blue rounded-b">
+                  <div className="font-bold text-solarized-blue">事業承継税制 適用後</div>
+                  <div className="text-xs">キャッシュアウトなし</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </Section>
+    );
+
+    const QAItem = ({ q, a, c, comment, isError }) => (
+      <div className="mb-6 bg-white border border-solarized-base2 rounded-md overflow-hidden">
+        <div className="bg-solarized-base2 bg-opacity-50 p-3 font-bold text-solarized-base02 border-b border-solarized-base2">
+          Q. {q}
+        </div>
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-bold text-solarized-base01 mb-1 text-xs">あなたの回答</h4>
+            <p className="bg-gray-50 p-2 rounded border border-gray-100">{a}</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-solarized-green mb-1 text-xs">正答例</h4>
+            <p className="bg-green-50 p-2 rounded border border-green-100">{c}</p>
+          </div>
+        </div>
+        <div className={`p-4 border-t text-sm ${isError ? 'bg-red-50 border-red-100 text-solarized-red' : 'bg-blue-50 border-blue-100 text-solarized-blue'}`}>
+          <p><strong>【実務解説・フィードバック】</strong><br />{comment}</p>
+        </div>
+      </div>
+    );
+
+    const Section6_QA = () => (
+      <Section id="qa" title="6. Q&Aと実務解説">
+        <div className="bg-solarized-base2 bg-opacity-30 p-4 rounded-md mb-6 text-sm">
+          <p className="font-bold mb-2">💡 総評：税法と民法の切り分けが鍵</p>
+          <p>顧客の資産状況を踏まえた実務的な提案力（Q6）は非常に高いレベルです。一方で、制度の根本的な理解において<strong>「税法（事業承継税制の納税繰延）」</strong>と<strong>「民法（遺留分対策の評価額固定・除外）」</strong>の混同が見られます。実技面接ではこの2つが交互に問われるため、明確に切り分けて回答を組み立てる必要があります。</p>
+        </div>
+
+        <QAItem 
+          q="遺留分の民法特例について教えて下さい。"
+          a="株式の贈与について固定合意、あるいは他の資産の除外合意を行うことで遺留分の行使の制限を決定し、相続時の資産の分配をあらかじめスムーズに決めておくものです"
+          c="後継者に円滑な事業承継を行うための特例で、除外合意や固定合意などの方法があります。"
+          comment="「誰の」「何から」守る制度なのかの認識ズレが見られます。制度の目的は「後継者」を「他の相続人の遺留分請求」から守ることです。"
+          isError={true}
+        />
+        <QAItem 
+          q="固定合意とはどのようなものですか？"
+          a="株式の贈与価格を、贈与時点の評価額、これは税理士などによる評価額で決定し、相続時にその価格にさかのぼって納税額を決定できます"
+          c="遺留分の計算に含める株価を合意時の時価に固定することを合意することです。"
+          comment="「納税額を決定」という事業承継税制(税法)の発想と混同しています。あくまで「遺留分(民法)の計算基礎となる株価」を固定するものです。"
+          isError={true}
+        />
+        <QAItem 
+          q="除外合意とはどのようなものですか？"
+          a="株式以外の財産について、遺留分の対象とはしないことを合意決定するものです"
+          c="株式等を遺留分の計算に含めないことを合意することです。"
+          comment="「株式以外の財産」ではなく、「贈与された自社株式そのもの」を遺留分の計算から除外する制度です。後継者に渡した株式を他の兄弟から守る強力なバリアとなります。"
+          isError={true}
+        />
+        <QAItem 
+          q="固定合意と除外合意のどちらを検討すべきか、理由とともに教えてください。"
+          a="まず、固定合意により贈与税から相続税に繰延し、資金調達を容易にします。また、他の親族については除外合意により、不動産の分割協議もあらかじめ進めておくメリットがあります"
+          c="まずは除外合意を検討すべきです。除外合意では、そもそも株式等の価額を遺留分算定のための財産の価額に算入しないため、後継者に有利となるためです。"
+          comment="ここでも税制との混同が見られます。経営を安定させたい場合、まずは「除外合意」を最優先で検討するのが実務の鉄則です。"
+          isError={true}
+        />
+        <QAItem 
+          q="遺留分の民法特例を利用するための手続きを教えてください。"
+          a="まず、経済産業省に届出し、その後、家庭裁判所の許可を得ます。いずれも一ヶ月以内です。"
+          c="まず、相続人全員で合意書を作成します。その後、１か月以内に経済産業大臣に確認の申請を行います。確認を受けた日から、１か月以内に家庭裁判所の許可を受けることで、合意の効力が生じます。"
+          comment="実務上最大のハードルである「推定相続人全員の合意」が抜けています。ここを理解しているかが面接での重要チェックポイントになります。"
+          isError={true}
+        />
+        <QAItem 
+          q="推定相続人全員の合意が得られるために何か工夫できることはありますか？"
+          a="現預金と賃貸アパートがありますので、死亡保険金の受取人を推定相続人にするなど、かなりのプランが構築できそうです。事業用資産についても推定相続人が承継者に賃貸することも考えられますが、それぞれの負担感を考慮しながらアドバイスすることになります。"
+          c="生命保険を活用し、各相続人が納得できる額の保険金が受け取れるように備えておく方法が考えられます。"
+          comment="Excellent! FPとしての実践的な提案力が光る素晴らしい回答です。顧客の具体的な保有資産（現預金、賃貸アパート）に言及できている点は、実技面接でも高く評価されます。"
+          isError={false}
+        />
+      </Section>
+    );
+
+    // --- Main App Renderer --- //
+    const App = () => {
+      return (
+        <div id="document-container">
+          <header className="mb-12 border-b-4 border-solarized-yellow pb-6">
+            <h1 className="text-3xl md:text-4xl font-bold text-solarized-base03 mb-2 tracking-tight">
+              FP1級実技 設例分析ダッシュボード
+            </h1>
+            <p className="text-solarized-base01 text-lg">
+              26 法人の承継対策⑦ 遺留分に関する民法の特例
+            </p>
+          </header>
+
+          <main>
+            <Section1_Overview />
+            <Section2_5W1H />
+            <Section3_SWOT />
+            <Section4_Assets />
+            <Section5_Effects />
+            <Section6_QA />
+          </main>
+          
+          <footer className="mt-16 pt-6 border-t border-solarized-base2 text-center text-solarized-base1 text-sm">
+            <p>FP Camp 毎日一題 復習用ドキュメント</p>
+          </footer>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
