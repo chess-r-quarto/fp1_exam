@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP1級 案件ダッシュボード：医療法人の承継</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration for Solarized Light Theme & Typography -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solarized: {
+              base03: '#002b36',
+              base02: '#073642',
+              base01: '#586e75',
+              base00: '#657b83',
+              base0: '#839496',
+              base1: '#93a1a1',
+              base2: '#eee8d5',
+              base3: '#fdf6e3',
+              yellow: '#b58900',
+              orange: '#cb4b16',
+              red: '#dc322f',
+              magenta: '#d33682',
+              violet: '#6c71c4',
+              blue: '#268bd2',
+              cyan: '#2aa198',
+              green: '#859900',
+            }
+          },
+          fontFamily: {
+            sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  
+  <!-- Babel Standalone -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script>
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+
+  <style>
+    /* * デジタル庁ガイドライン/Quarto風のシンプルスタイル 
+     * 見出しの階層と余白を明確にし、装飾を最小限に抑える
+     */
+    body {
+      background-color: #fdf6e3; /* Solarized Light Base3 */
+      color: #657b83; /* Solarized Light Base00 */
+      line-height: 1.6;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      color: #586e75; /* Solarized Light Base01 */
+      font-weight: 700;
+    }
+    .section-divider {
+      border-top: 1px solid #eee8d5; /* Solarized Light Base2 */
+      margin: 3rem 0;
+    }
+    .quarto-table th {
+      border-bottom: 2px solid #93a1a1;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: bold;
+      color: #586e75;
+    }
+    .quarto-table td {
+      border-bottom: 1px solid #eee8d5;
+      padding: 0.75rem;
+    }
+    .quarto-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="tsx">
+    const { useState } = React;
+
+    // --- コンポーネント群 ---
+
+    const Header = () => (
+      <header className="mb-12 pt-12 pb-6 border-b-2 border-solarized-base1">
+        <p className="text-solarized-blue font-bold tracking-wider text-sm mb-2">FP1級 実技試験対策ダッシュボード</p>
+        <h1 className="text-4xl font-bold leading-tight">医療法人の承継<br/><span className="text-2xl font-normal text-solarized-base00">〜出資持分の相続税対策と認定医療法人制度〜</span></h1>
+        <div className="mt-4 text-sm text-solarized-base1">
+          最終更新日: 2026年3月 | 想定ケーススタディ
+        </div>
+      </header>
+    );
+
+    const Section1Overview = () => (
+      <section className="mb-12">
+        <h2 className="text-2xl mb-6 flex items-center">
+          <span className="text-solarized-cyan mr-3 font-mono">1.</span>
+          FP目線全体像
+        </h2>
+        <div className="pl-8 text-solarized-base00">
+          <p className="mb-4">
+            本案件は、出資持分のある医療法人の理事長が直面する「出資持分の評価額高騰による多額の相続税負担」という課題を解決するための提案です。
+          </p>
+          <p className="mb-4">
+            最大のポイントは、<strong>「認定医療法人制度」</strong>を活用した持分なし医療法人への移行スキームです。持分を「払い戻す」のではなく、国の認定を受けた上で「放棄」することで、本来発生する法人へのみなし贈与税を特例により非課税（排除）とします。
+          </p>
+          <p>
+            これにより、相続財産から出資持分が外れ、次世代への円滑な医業承継が実現します。ただし、将来のエグジット（残余財産の分配やM&Aでのキャピタルゲイン）を手放すという重大な意思決定を伴うため、顧客への丁寧な説明と合意形成が不可欠です。
+          </p>
+        </div>
+      </section>
+    );
+
+    const Section2FiveWOneH = () => (
+      <section className="mb-12">
+        <h2 className="text-2xl mb-6 flex items-center">
+          <span className="text-solarized-cyan mr-3 font-mono">2.</span>
+          5W1H分析
+        </h2>
+        <div className="pl-8">
+          <table className="w-full quarto-table">
+            <tbody>
+              <tr>
+                <th className="w-1/4 align-top">Who (誰が)</th>
+                <td>持分あり医療法人の理事長（現オーナー）とその後継者・相続人</td>
+              </tr>
+              <tr>
+                <th className="align-top">What (何を)</th>
+                <td>認定医療法人制度の特例を活用し、持分あり医療法人から「持分なし医療法人」へ移行する</td>
+              </tr>
+              <tr>
+                <th className="align-top">When (いつ)</th>
+                <td>制度の適用期限である<strong>2026年（令和8年）12月31日</strong>までに移行計画の認定を受ける</td>
+              </tr>
+              <tr>
+                <th className="align-top">Where (どこで)</th>
+                <td>厚生労働省（移行計画の認定）、都道府県（定款変更の認可）</td>
+              </tr>
+              <tr>
+                <th className="align-top">Why (なぜ)</th>
+                <td>出資持分の評価額上昇に伴う、莫大な相続税負担を回避し、医業の永続性を確保するため</td>
+              </tr>
+              <tr>
+                <th className="align-top">How (どのように)</th>
+                <td>厚労省の認定後、5年以内に全持分を放棄する。移行後6年間は継続して要件を満たし、モニタリング報告を行う</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+
+    const Section3SWOT = () => (
+      <section className="mb-12">
+        <h2 className="text-2xl mb-6 flex items-center">
+          <span className="text-solarized-cyan mr-3 font-mono">3.</span>
+          SWOT分析
+        </h2>
+        <div className="pl-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          <div>
+            <h3 className="text-lg font-bold text-solarized-blue mb-2">強み (Strengths)</h3>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>地域医療に根ざした安定した事業基盤</li>
+              <li>長年の経営による強固な財務体質（内部留保の蓄積）</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-solarized-red mb-2">弱み (Weaknesses)</h3>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>内部留保の蓄積による<strong>出資持分評価額の高騰</strong></li>
+              <li>後継者の納税資金不足・買取資金不足</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-solarized-green mb-2">機会 (Opportunities)</h3>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>認定医療法人制度の期限延長（2026年末まで）</li>
+              <li>みなし贈与税非課税という強力な税制優遇の存在</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-solarized-yellow mb-2">脅威 (Threats)</h3>
+            <ul className="list-disc list-inside space-y-1 ml-2">
+              <li>移行後6年以内の要件未達による<strong>税金追徴リスク</strong></li>
+              <li>解散時の<strong>残余財産分配権の喪失</strong>（国庫帰属）</li>
+              <li>M&A等での持分譲渡益（キャピタルゲイン）獲得機会の喪失</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    );
+
+    const Section4Assets = () => (
+      <section className="mb-12">
+        <h2 className="text-2xl mb-6 flex items-center">
+          <span className="text-solarized-cyan mr-3 font-mono">4.</span>
+          資産/企業概要の図表（モデルケース）
+        </h2>
+        <div className="pl-8">
+          <p className="mb-4 text-sm">※解説用の仮想モデルケースです。内部留保が蓄積し、持分評価額が設立時の数十倍に膨れ上がっている典型的な状態を示します。</p>
+          <table className="w-full quarto-table">
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>内容・金額</th>
+                <th>備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>医療法人名</td>
+                <td>医療法人社団 〇〇会</td>
+                <td>持分あり医療法人（経過措置型）</td>
+              </tr>
+              <tr>
+                <td>設立時期</td>
+                <td>平成5年（1993年）</td>
+                <td>業歴約30年</td>
+              </tr>
+              <tr>
+                <td>設立時の出資額</td>
+                <td>1,000 万円</td>
+                <td>現理事長が100%出資</td>
+              </tr>
+              <tr>
+                <td>純資産額（現在）</td>
+                <td>5億 1,000 万円</td>
+                <td>長年の利益蓄積（内部留保）</td>
+              </tr>
+              <tr className="bg-solarized-base2 bg-opacity-30 font-bold">
+                <td className="text-solarized-red">現在の出資持分評価額</td>
+                <td className="text-solarized-red">約 5億 万円</td>
+                <td className="text-solarized-red">このまま相続が発生すると莫大な課税対象に</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+
+    const Section5TaxEffect = () => (
+      <section className="mb-12">
+        <h2 className="text-2xl mb-6 flex items-center">
+          <span className="text-solarized-cyan mr-3 font-mono">5.</span>
+          節税効果の図表
+        </h2>
+        <div className="pl-8">
+          <p className="mb-6">モデルケースにおける「そのまま相続した場合」と「認定医療法人制度を活用した場合」の比較です。（※相続税の限界税率を便宜上50%として概算）</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* パターンA */}
+            <div className="border border-solarized-base2 p-6 bg-white bg-opacity-50">
+              <h3 className="text-center font-bold text-solarized-red mb-4">現状のまま相続発生</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span>持分評価額</span>
+                  <span className="font-mono text-lg">500,000,000 円</span>
+                </div>
+                <div className="flex justify-between items-center text-solarized-base1">
+                  <span>相続税率 (仮)</span>
+                  <span className="font-mono">× 50 %</span>
+                </div>
+                <div className="border-t border-solarized-base2 pt-2 flex justify-between items-center font-bold text-solarized-red">
+                  <span>持分に対する相続税</span>
+                  <span className="font-mono text-xl">250,000,000 円</span>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed">
+                後継者はこの莫大な納税資金を個人で用意するか、法人に払戻請求をして法人のキャッシュを大きく毀損させる必要があります。
+              </p>
+            </div>
+
+            {/* パターンB */}
+            <div className="border border-solarized-cyan border-opacity-50 p-6 bg-solarized-cyan bg-opacity-5 relative">
+              <div className="absolute top-0 right-0 bg-solarized-cyan text-white text-xs px-2 py-1 font-bold">推奨スキーム</div>
+              <h3 className="text-center font-bold text-solarized-blue mb-4">認定医療法人制度で持分放棄</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span>法人へのみなし贈与税</span>
+                  <span className="font-mono text-lg line-through text-solarized-base1">発生</span>
+                  <span className="font-mono text-lg text-solarized-green font-bold">特例により免除(0円)</span>
+                </div>
+                <div className="flex justify-between items-center text-solarized-base1 mt-2">
+                  <span>個人の持分評価額</span>
+                  <span className="font-mono">放棄により 0 円</span>
+                </div>
+                <div className="border-t border-solarized-cyan border-opacity-30 pt-2 flex justify-between items-center font-bold text-solarized-blue">
+                  <span>持分に対する相続税</span>
+                  <span className="font-mono text-xl">0 円</span>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed">
+                持分を計画的に放棄することで課税関係をクリアにでき、次世代は法人の資産（医療インフラ）を無税で引き継ぐことが可能になります。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+
+    const Section6QA = () => {
+      const qaList = [
+        {
+          q: "認定医療法人制度を用いて、持分なし医療法人へ移行するメリットは？",
+          a: "最大のメリットは、相続人の持分相当額の相続税を軽減（評価額ゼロ）できることです。また、特例を利用することで、本来持分を放棄した際に法人側に発生する「みなし贈与税」を免除（排除）することができます。",
+          note: "実務上の注意点：「払い戻し」ではなく「放棄」である点を明確に説明する必要があります。払い戻しは資金流出を伴うため避けるべきです。"
+        },
+        {
+          q: "持分ありから持分なしへ移行するデメリットは？",
+          a: "構造上の最大のデメリットは、将来法人が解散した際の「残余財産の分配」が認められない（最終的に国庫等へ帰属する）こと、および持分売却によるM&A等でのキャピタルゲインが得られなくなることです。",
+          note: "実務上の注意点：さらに、移行後6年間は毎年モニタリング報告が必要であり、要件を満たさなくなった場合は免除された税金が追徴される経営リスクがある点も伝達が必須です。"
+        },
+        {
+          q: "認定医療法人制度における手続きの概要は？",
+          a: "まず、厚生労働省に移行計画を提出し認定を受けます。その後、認定から5年以内に保有する持分をすべて放棄し、持分なし医療法人への移行を完了させます。",
+          note: "実務上の注意点：定款変更の認可権者は都道府県であるなど管轄が分かれます。手続きが煩雑なため、税理士、行政書士、専門コンサルタントとの連携が望ましいです。"
+        },
+        {
+          q: "認定医療法人制度の適用期限は？",
+          a: "2026年（令和8年）12月31日までです。",
+          note: "経営者の意思決定のタイムリミットです。"
+        },
+        {
+          q: "「持分なし医療法人」が解散した場合、残余財産は最終的にどこへ帰属しますか？",
+          a: "国（国庫）、地方公共団体、または公的医療機関等に帰属します。",
+          note: "法学的な背景：医療法人の収益の大部分は健康保険という公的資金で賄われているため、解散時に個人へ財産が還元されることを防ぎ、非営利性を徹底して社会（国庫）へ還元させるという立て付けになっています。"
+        }
+      ];
+
+      return (
+        <section className="mb-12">
+          <h2 className="text-2xl mb-6 flex items-center">
+            <span className="text-solarized-cyan mr-3 font-mono">6.</span>
+            Q&Aと実務解説
+          </h2>
+          <div className="pl-8 space-y-8">
+            {qaList.map((item, index) => (
+              <div key={index} className="pb-6 border-b border-solarized-base2 last:border-0">
+                <h3 className="text-lg font-bold mb-3 flex items-start">
+                  <span className="text-solarized-blue mr-2">Q.</span>
+                  {item.q}
+                </h3>
+                <div className="pl-6 space-y-3">
+                  <p className="flex items-start">
+                    <span className="text-solarized-green font-bold mr-2 mt-1">A.</span>
+                    <span className="leading-relaxed">{item.a}</span>
+                  </p>
+                  <div className="bg-solarized-base2 bg-opacity-20 p-3 text-sm border-l-4 border-solarized-yellow">
+                    <strong className="text-solarized-base01">【FP実務解説】</strong><br/>
+                    {item.note}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+    };
+
+    const Dashboard = () => (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Header />
+        <main>
+          <Section1Overview />
+          <div className="section-divider"></div>
+          <Section2FiveWOneH />
+          <div className="section-divider"></div>
+          <Section3SWOT />
+          <div className="section-divider"></div>
+          <Section4Assets />
+          <div className="section-divider"></div>
+          <Section5TaxEffect />
+          <div className="section-divider"></div>
+          <Section6QA />
+        </main>
+        <footer className="mt-20 pt-6 border-t border-solarized-base2 text-center text-sm text-solarized-base1">
+          &copy; 2026 FP Practical Exam Preparation Dashboard.
+        </footer>
+      </div>
+    );
+
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<Dashboard />);
+  </script>
+</body>
+</html>
