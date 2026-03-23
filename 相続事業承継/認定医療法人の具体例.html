@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP1級実技 復習ダッシュボード：医療法人の事業承継</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solarized: {
+              base03: '#002b36',
+              base02: '#073642', // Headings, Strong emphasis
+              base01: '#586e75',
+              base00: '#657b83', // Main text
+              base0: '#839496',
+              base1: '#93a1a1',  // Borders, subtle text
+              base2: '#eee8d5',  // Highlights, table headers
+              base3: '#fdf6e3',  // Background
+            }
+          },
+          fontFamily: {
+            sans: ['"Helvetica Neue"', 'Arial', '"Hiragino Kaku Gothic ProN"', '"Hiragino Sans"', 'Meiryo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Typography & Print Adjustments */
+    body {
+      background-color: #fdf6e3; /* solarized-base3 */
+      color: #657b83; /* solarized-base00 */
+      font-size: 18px; /* Slightly larger for E-ink readability */
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 {
+      color: #073642; /* solarized-base02 */
+      line-height: 1.4;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+    th, td {
+      border: 1px solid #93a1a1;
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+    th {
+      background-color: #eee8d5;
+      color: #073642;
+      font-weight: bold;
+    }
+    /* Quarto-style blockquotes for callouts */
+    blockquote {
+      border-left: 6px solid #586e75;
+      background-color: #eee8d5;
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+    /* Avoid breaking inside crucial elements when printing/exporting to PDF */
+    @media print {
+      body {
+        background-color: #ffffff;
+      }
+      .print-avoid-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      h2 {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+    }
+    /* E-ink Contrast Enhancements */
+    .border-heavy {
+      border: 2px solid #586e75;
+    }
+    .bg-contrast {
+      background-color: #eee8d5;
+    }
+  </style>
+</head>
+<body class="max-w-4xl mx-auto px-6 py-12 md:px-12">
+
+  <header class="mb-10 print-avoid-break">
+    <h1 class="text-3xl font-bold mb-4 pb-2 border-b-2 border-solarized-base1">
+      FP1級実技 面接対策ダッシュボード
+    </h1>
+    <p class="text-solarized-base01 text-base">
+      テーマ：医療法人の事業承継と出資持分の相続税・遺留分対策<br>
+      最適化：Kindle / E-ink デバイス / Quarto スタイル
+    </p>
+  </header>
+
+  <article class="space-y-12">
+
+    <!-- 1. FP目線全体像 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">1.</span> FP目線全体像（問題の本質とFPとしての結論）
+      </h2>
+      <div class="bg-contrast p-6 rounded border border-solarized-base1">
+        <p class="mb-0 font-bold text-solarized-base02 text-lg">
+          結論：移行期限（5年）内の出資持分放棄を完遂させつつ、民法特例に頼らない独自の遺留分対策を急ぐ必要がある。
+        </p>
+        <p class="mt-4">
+          Aさんは認定医療法人の認定を取得済みであるが、出資持分の放棄が未了である。このまま5年が経過すると認定が取り消され、多額の相続税・贈与税リスクが復活する。また、医療法人は中小企業者に該当せず遺留分の民法特例（除外合意等）が活用できないため、長女Dさんからの遺留分減殺（侵害額）請求による承継リスクが極めて高い。持分放棄と並行して、代償財産の確保（生命保険等）と持分評価額の圧縮（設備投資等）の実行がFPとしての最優先提案事項となる。
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. 5W1H分析 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">2.</span> 5W1H分析
+      </h2>
+      <ul class="space-y-3 pl-2">
+        <li><strong>Who (誰が):</strong> Aさん（70歳、Xクリニック理事長・出資持分100%保有）</li>
+        <li><strong>What (何を):</strong> 持分なし医療法人への移行完了と、長男Cさんへの事業承継・長女Dさんへの遺留分対策を</li>
+        <li><strong>When (いつまでに):</strong> 認定医療法人の移行期限（移行計画提出から5年）以内、または相続発生時までに</li>
+        <li><strong>Where (どこで):</strong> 社団医療法人Xクリニックにおいて</li>
+        <li><strong>Why (なぜ):</strong> 税負担を抑えたスムーズな事業承継と、親族間（特にDさん）の「争族」を防止するため</li>
+        <li><strong>How (どのように):</strong> 認定医療法人制度の特例（納税猶予・免除）を活用しつつ、生命保険や内部留保を活用した評価引き下げにより遺留分対策を行う</li>
+      </ul>
+    </section>
+
+    <!-- 3. SWOT分析 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">3.</span> SWOT分析
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="border-heavy p-4">
+          <h3 class="text-xl mb-2">【S】強み (Strengths)</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>認定医療法人の認定取得済</li>
+            <li>後継者（長男Cさん・35歳内科医）が既に勤務</li>
+            <li>Aさんが出資持分を100%保有（権利調整が容易）</li>
+          </ul>
+        </div>
+        <div class="border-heavy p-4 border-dashed">
+          <h3 class="text-xl mb-2">【W】弱み (Weaknesses)</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>出資持分が未放棄（税制優遇が未確定）</li>
+            <li>遺留分対策の民法特例が適用不可</li>
+            <li>Dさんに対する具体的な代償財産の準備不足</li>
+          </ul>
+        </div>
+        <div class="border-heavy p-4">
+          <h3 class="text-xl mb-2">【O】機会 (Opportunities)</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>相続発生時でも相続人が放棄すれば免除特例あり</li>
+            <li>潤沢な内部留保を活用した建て替えによる評価減</li>
+            <li>生命保険の非課税枠の活用余地</li>
+          </ul>
+        </div>
+        <div class="border-heavy p-4 bg-solarized-base2">
+          <h3 class="text-xl mb-2">【T】脅威 (Threats)</h3>
+          <ul class="list-disc list-inside space-y-1 font-bold">
+            <li>移行計画提出から5年経過による認定取消し</li>
+            <li>高額な出資持分への相続税負担</li>
+            <li>長女Dさんからの多額の遺留分侵害額請求</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 資産・企業・家族構成の図表要約 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">4.</span> 資産・企業・家族構成の図表要約
+      </h2>
+      <table>
+        <tbody>
+          <tr>
+            <th class="w-1/3">対象法人</th>
+            <td>社団医療法人Xクリニック（内科・小児科）</td>
+          </tr>
+          <tr>
+            <th>社員（3名）</th>
+            <td>Aさん(70歳)、妻Bさん(63歳)、弟Eさん(65歳・小児科医)</td>
+          </tr>
+          <tr>
+            <th>出資持分</th>
+            <td>Aさんが100%保有（放棄手続きは未済）</td>
+          </tr>
+          <tr>
+            <th>後継者</th>
+            <td>長男Cさん(35歳・内科医)。Xクリニック関連資産を承継予定。</td>
+          </tr>
+          <tr>
+            <th>その他の推定相続人</th>
+            <td>長女Dさん(33歳)。相応の資産を承継させたい意向あり。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. 提案プランと効果の図表 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">5.</span> 提案プランと効果の図表（現状 vs 推奨）
+      </h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="w-1/4">項目</th>
+            <th class="w-3/8">現状の結末（放置した場合）</th>
+            <th class="w-3/8">推奨プラン（FP提案）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-bold">医療法人の認定</td>
+            <td>5年経過で認定取消。優遇税制が白紙に。</td>
+            <td>速やかな持分放棄を実行し、非課税を確定。</td>
+          </tr>
+          <tr>
+            <td class="font-bold">遺留分対策</td>
+            <td>特例不可のためDさんからCさんへ多額の請求が発生。クリニックの資金繰り悪化。</td>
+            <td>Aさんを契約者・被保険者、Dさんを受取人とする終身保険に加入し、代償現金を確保。</td>
+          </tr>
+          <tr>
+            <td class="font-bold">出資持分の評価</td>
+            <td>内部留保がそのまま評価され、高騰した状態での相続・贈与となる。</td>
+            <td>内部留保を原資にクリニックの老朽化対策（建て替え）を行い、不動産評価額へ圧縮する。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. Q&Aと実務解説 -->
+    <section class="print-avoid-break">
+      <h2 class="text-2xl font-bold mb-4 flex items-center">
+        <span class="mr-2">6.</span> Q&Aと実務解説（口頭試問対策）
+      </h2>
+      
+      <div class="space-y-6">
+        <div class="border-l-4 border-solarized-base02 pl-4">
+          <h4 class="font-bold text-lg">Q1. 持分放棄をしていない問題点は？</h4>
+          <p class="mt-2 text-solarized-base00">
+            <strong>【回答】</strong> 移行計画の提出から5年（移行期限）以内に持分を放棄しない場合、認定医療法人の認定が取り消されることです。
+          </p>
+        </div>
+
+        <div class="border-l-4 border-solarized-base02 pl-4">
+          <h4 class="font-bold text-lg">Q2. 放棄前にAさんに相続が発生した場合（法人側）はどうなるか？</h4>
+          <p class="mt-2 text-solarized-base00">
+            <strong>【回答】</strong> 認定の取り消しは行われません。さらに、「相続人が持分放棄を行った場合」には、医療法人に贈与税のみなし課税は行われません。（※「相続人が手続きを行うこと」を明言するのがポイント）
+          </p>
+        </div>
+
+        <div class="border-l-4 border-solarized-base02 pl-4">
+          <h4 class="font-bold text-lg">Q3. 相続人が受け取った放棄前の持分に関する相続税は？</h4>
+          <p class="mt-2 text-solarized-base00">
+            <strong>【回答】</strong> 特例を用いることで、まずは相続税が「納税猶予」されます。その後、相続人が実際に持分を「放棄」することで、最終的に相続税が「免除」されます。（※猶予→免除の2段階プロセスを説明すること）
+          </p>
+        </div>
+
+        <div class="border-l-4 border-solarized-base02 pl-4">
+          <h4 class="font-bold text-lg">Q4. 医療法人に遺留分に関する民法特例は適用できるか？</h4>
+          <p class="mt-2 text-solarized-base00">
+            <strong>【回答】</strong> 適用できません。医療法人は「中小企業者」に該当しないため、経営承継円滑化法に基づく民法の特例（除外合意・固定合意）の対象外となります。
+          </p>
+        </div>
+
+        <blockquote class="print-avoid-break">
+          <h4 class="font-bold text-xl mb-2">💡 実務コンサルティングの勘所（＋αの提案）</h4>
+          <p>
+            <strong>① 生命保険活用のトラップ：</strong><br>
+            Dさんへの代償財産確保のため生命保険を活用する際、「法人が保険料を負担（損金計上）し、Dさん（個人）が受取人」となる形態は、Aさんへの役員給与とみなされ税務上の不利益が生じます。<strong>「Aさん個人の契約として加入する」</strong>か、<strong>「法人契約として法人が受け取り、Cさんへの死亡退職金経由で代償分割の原資とする」</strong>のが正解です。
+          </p>
+          <p class="mt-3">
+            <strong>② 内部留保の活用（評価圧縮）：</strong><br>
+            持分放棄前に相続が発生するリスクに備え、潤沢な内部留保を「クリニックの建て替え資金」に充てる提案は極めて有効です。現金を建築物に変えることで、相続税評価額を建築費用の約60〜70%に圧縮でき、後継者Cさんも新しい設備で事業をスタートできるという一石二鳥の提案となります。
+          </p>
+        </blockquote>
+      </div>
+    </section>
+
+  </article>
+
+</body>
+</html>
