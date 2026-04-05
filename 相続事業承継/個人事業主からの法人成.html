@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FP1級実技ケース分析：個人事業の法人化と事業承継</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solar: {
+                            base03: '#002b36',
+                            base02: '#073642', // 見出し・強調テキスト
+                            base01: '#586e75',
+                            base00: '#657b83', // 基本テキスト
+                            base0: '#839496',
+                            base1: '#93a1a1',  // ボーダー等
+                            base2: '#eee8d5',  // ハイライト背景（薄）
+                            base3: '#fdf6e3',  // 全体背景
+                            base4: '#e5e0c8',  // ハイライト背景（濃・強み等）
+                        }
+                    },
+                    fontSize: {
+                        'base': '18px', // Kindle閲覧用に少し大きめ
+                    },
+                    lineHeight: {
+                        'relaxed': '1.7', // 読みやすさ重視
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* タイポグラフィと基本設定 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            background-color: #fdf6e3; /* Solarized Light background */
+            color: #657b83; /* Solarized Light text */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2, h3, h4, strong {
+            color: #073642; /* 見出しは高コントラストに */
+        }
+
+        /* 印刷・PDF化時の改ページ制御 */
+        .page-break-avoid {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* E-ink/印刷用のコントラスト調整 */
+        @media print {
+            body {
+                background-color: #ffffff;
+                color: #000000;
+                font-size: 14pt; /* 印刷時はポイント指定 */
+            }
+            h1, h2, h3, h4, strong {
+                color: #000000;
+            }
+            .print-border {
+                border: 1px solid #cccccc !important;
+            }
+            .print-bg-dark {
+                background-color: #e0e0e0 !important; /* 強み等の濃い背景 */
+            }
+            .print-bg-light {
+                background-color: #f5f5f5 !important; /* 弱み等の薄い背景 */
+            }
+        }
+    </style>
+</head>
+<body class="text-base leading-relaxed py-8 px-4 md:px-12 max-w-4xl mx-auto">
+
+    <!-- ヘッダー -->
+    <header class="mb-12 border-b-2 border-solar-base1 pb-6 page-break-avoid">
+        <div class="text-sm font-bold text-solar-base01 mb-2 tracking-widest">FP1級実技 ケーススタディ復習シート</div>
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-4">個人事業の法人化と<br>事業（不動産収入）の承継</h1>
+        <p class="text-solar-base01 font-medium">相談者：Aさん（70歳・不動産賃貸業）</p>
+    </header>
+
+    <!-- 1. FP目線全体像 -->
+    <section class="mb-12 page-break-avoid">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+            1. FP目線全体像
+        </h2>
+        <div class="bg-solar-base2 print-bg-light p-6 rounded-lg">
+            <h3 class="font-bold text-lg mb-2">問題の本質</h3>
+            <p class="mb-4">
+                個人のまま不動産賃貸業を継続することによる「高額な所得税負担」と、将来発生する相続において「賃貸収入を長女・二女へ均等に承継させたい」という想いの実現。不動産の共有化は将来のトラブルの火種となるため回避する必要がある。
+            </p>
+            <h3 class="font-bold text-lg mb-2">FPとしての結論（提案の方向性）</h3>
+            <p>
+                「不動産管理会社（資産管理会社）」の設立による法人化を推奨する。Aさんが個人で所有する不動産のうち、建物のみを法人へ売却（または現物出資）し、長女Cさんと二女Dさんに株式を持たせ、役員に就任させるスキームを検討する。これにより、役員報酬による生前からの「所得分散（所得税軽減）」と、将来の「遺産分割の円滑化・相続税評価引き下げ」を同時に達成する。
+            </p>
+        </div>
+    </section>
+
+    <!-- 2. 5W1H分析 -->
+    <section class="mb-12 page-break-avoid">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+            2. 5W1H分析
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+                <span class="font-bold text-solar-base02 block mb-1">Who (誰が)</span>
+                Aさん(70歳)、妻Bさん(68歳)、長女Cさん(44歳・別居)、二女Dさん(40歳・同居)
+            </div>
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+                <span class="font-bold text-solar-base02 block mb-1">What (何を)</span>
+                所得税の負担軽減と、将来的な不動産収入の均等な承継
+            </div>
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+                <span class="font-bold text-solar-base02 block mb-1">When (いつ)</span>
+                現在の税負担解消から、将来の相続発生時に向けて
+            </div>
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+                <span class="font-bold text-solar-base02 block mb-1">Where (どこで)</span>
+                S市内ターミナル駅中心の商業地域内にある甲土地・乙土地について
+            </div>
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light md:col-span-2">
+                <span class="font-bold text-solar-base02 block mb-1">Why (なぜ)</span>
+                毎年の所得税負担が重く、金融機関からも提案を受けているため。娘2人に平等に収入を残したいため。
+            </div>
+            <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light md:col-span-2">
+                <span class="font-bold text-solar-base02 block mb-1">How (どのように)</span>
+                不動産管理会社の設立など、税理士等の専門家と連携した有効なスキームの実行
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SWOT分析 -->
+    <section class="mb-12 page-break-avoid">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+            3. SWOT分析
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- S / O (ポジティブ要因：少し濃い背景で強調) -->
+            <div class="bg-solar-base4 print-bg-dark p-5 rounded-lg shadow-sm">
+                <h3 class="font-bold text-lg mb-3 flex items-center">
+                    <span class="inline-block w-6 h-6 bg-solar-base02 text-white text-sm text-center leading-6 rounded-full mr-2">S</span>
+                    強み (Strengths)
+                </h3>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>立地が良好な不動産を所有（ターミナル駅中心の商業地域）</li>
+                    <li>満室稼働で安定した高い収益力（家賃収入5,000万円/不動産所得3,000万円）</li>
+                    <li>金融機関との良好な関係（融資に前向き）</li>
+                </ul>
+            </div>
+            <div class="bg-solar-base4 print-bg-dark p-5 rounded-lg shadow-sm">
+                <h3 class="font-bold text-lg mb-3 flex items-center">
+                    <span class="inline-block w-6 h-6 bg-solar-base02 text-white text-sm text-center leading-6 rounded-full mr-2">O</span>
+                    機会 (Opportunities)
+                </h3>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>法人化による税負担軽減効果（所得税と法人税の税率差の活用）</li>
+                    <li>法人化を通じた、長女・二女へのスムーズな収入移転スキームの構築</li>
+                    <li>役員報酬を通じた実質的な生前贈与（所得分散）</li>
+                </ul>
+            </div>
+            <!-- W / T (ネガティブ要因：薄い背景で差別化) -->
+            <div class="bg-solar-base2 border border-solar-base1 print-bg-light print-border p-5 rounded-lg">
+                <h3 class="font-bold text-lg mb-3 flex items-center">
+                    <span class="inline-block w-6 h-6 bg-solar-base01 text-white text-sm text-center leading-6 rounded-full mr-2">W</span>
+                    弱み (Weaknesses)
+                </h3>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>個人の所得税負担が極めて重い</li>
+                    <li>Aさんが70歳であり、今後の認知症リスクや相続発生が視野に入る年齢であること</li>
+                </ul>
+            </div>
+            <div class="bg-solar-base2 border border-solar-base1 print-bg-light print-border p-5 rounded-lg">
+                <h3 class="font-bold text-lg mb-3 flex items-center">
+                    <span class="inline-block w-6 h-6 bg-solar-base01 text-white text-sm text-center leading-6 rounded-full mr-2">T</span>
+                    脅威 (Threats)
+                </h3>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>法人化に伴うランニングコスト（社会保険料、均等割等）の増加</li>
+                    <li>適切な対策を行わなかった場合の、相続時の遺産分割トラブル（不動産の共有化リスク）や納税資金不足</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 資産・企業・家族構成の図表要約 -->
+    <section class="mb-12 page-break-avoid">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+            4. 資産・家族構成 要約
+        </h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse border border-solar-base1 print-border bg-white print-bg-light">
+                <thead>
+                    <tr class="bg-solar-base2 print-bg-dark">
+                        <th class="border border-solar-base1 print-border p-3 w-1/4">項目</th>
+                        <th class="border border-solar-base1 print-border p-3 w-3/4">詳細</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="border border-solar-base1 print-border p-3 bg-solar-base2 print-bg-dark">家族（推定相続人）</th>
+                        <td class="border border-solar-base1 print-border p-3">
+                            <ul class="list-disc pl-5">
+                                <li><strong>Aさん（70歳）</strong>：本人。不動産賃貸業。</li>
+                                <li><strong>妻Bさん（68歳）</strong>：青色事業専従者。同居。</li>
+                                <li><strong>長女Cさん（44歳）</strong>：専業主婦。別居（夫所有の持家）。</li>
+                                <li><strong>二女Dさん（40歳）</strong>：会社員。同居。</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="border border-solar-base1 print-border p-3 bg-solar-base2 print-bg-dark">所有資産・収益状況</th>
+                        <td class="border border-solar-base1 print-border p-3">
+                            <ul class="list-disc pl-5">
+                                <li><strong>甲土地</strong>：賃貸マンションあり。満室稼働。</li>
+                                <li><strong>乙土地</strong>：詳細不明（設例記載のみ）。商業地域内。</li>
+                                <li><strong>収益</strong>：家賃収入 年間5,000万円（不動産所得 3,000万円）</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 5. 提案プランと効果の図表 -->
+    <section class="mb-12 page-break-avoid">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+            5. プラン比較（現状 vs 推奨プラン）
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="border-2 border-solar-base1 print-border p-5 rounded bg-white">
+                <h3 class="font-bold text-xl text-center mb-4 pb-2 border-b border-solar-base1">現状維持（個人のまま）</h3>
+                <div class="mb-4">
+                    <strong class="block text-solar-base02 mb-1">【税負担】</strong>
+                    <p>所得3,000万に対し、最高税率に近い累進課税（所得税・住民税）が継続する。</p>
+                </div>
+                <div>
+                    <strong class="block text-solar-base02 mb-1">【相続時（事業承継）】</strong>
+                    <p>「娘2人に均等に」を実現しようとすると、不動産の共有名義となり、将来の売却や大規模修繕時に意見対立リスク（争族）が発生する。</p>
+                </div>
+            </div>
+            
+            <div class="border-2 border-solar-base02 print-border p-5 rounded bg-solar-base4 print-bg-dark shadow-md relative">
+                <div class="absolute -top-3 left-4 bg-solar-base02 text-white text-sm font-bold px-3 py-1 rounded">FP推奨</div>
+                <h3 class="font-bold text-xl text-center mb-4 pb-2 border-b border-solar-base01">法人設立（建物所有方式等）</h3>
+                <div class="mb-4">
+                    <strong class="block text-solar-base02 mb-1">【税負担】</strong>
+                    <p>法人税（比例税率）の適用と、Aさんや娘への役員報酬支給により、世帯全体の税負担（所得分散効果）を劇的に軽減。</p>
+                </div>
+                <div>
+                    <strong class="block text-solar-base02 mb-1">【相続時（事業承継）】</strong>
+                    <p>Cさん・Dさんが自社株式を50%ずつ保有（またはAさんから生前贈与・相続）することで、不動産を共有せずとも賃貸収入と経営権を均等に承継可能。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Q&Aと実務解説 -->
+    <section class="mb-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3 page-break-avoid">
+            6. 面接対策 Q&A（模範解答と解説）
+        </h2>
+        <div class="space-y-6">
+
+            <!-- Q1 -->
+            <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid shadow-sm">
+                <h3 class="font-bold text-lg mb-3">Q. 法人化することによるメリットを教えてください。</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-medium">個人所得税の累進課税から法人税の比例税率になることによる税負担軽減に加え、親族を役員にすることによる所得分散効果、相続時の株式化による評価減や遺産分割の円滑化などが挙げられます。</p>
+                </div>
+                <div class="text-sm bg-solar-base3 p-3 rounded border border-solar-base1">
+                    <strong>FPの視点：</strong> 税率の差だけでなく、「所得の分散」と「資産承継のスムーズさ」をセットで答えることで高評価につながります。
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid shadow-sm">
+                <h3 class="font-bold text-lg mb-3">Q. 法人化の目安となる所得の水準を教えてください。</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-medium">個人の課税所得が概ね900万円から1,000万円を超えたあたりが、法人化を検討すべき目安とされています。</p>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid shadow-sm">
+                <h3 class="font-bold text-lg mb-3">Q. 法人化によって相続税の節税効果があるとは、どういうことですか？</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-medium">不動産を直接相続するのではなく、不動産を所有する「法人の株式」として相続することになります。非上場株式の評価（純資産価額方式等）においては、含み益に対する法人税等相当額の控除などがあるため、個人で不動産を保有するよりも相続税評価額が低くなる傾向があるためです。</p>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid shadow-sm">
+                <h3 class="font-bold text-lg mb-3">Q. 法人化した場合のデメリットを教えてください。</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-medium">法人設立費用や、赤字でも課税される法人住民税均等割の負担、役員報酬を支給する場合の社会保険料の負担増が挙げられます。また、税務申告や会計処理が複雑になるため、税理士等への報酬といったランニングコストが増加します。</p>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid shadow-sm">
+                <h3 class="font-bold text-lg mb-3">Q. 法人化する場合に検討すべき内容を教えてください。</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-medium">誰を株主・役員にするかといった機関設計、資本金の額、決算期の決定が必要です。また、法人化の方式（建物所有方式かサブリース方式か）の選定や、実際の税負担軽減効果について税理士等の専門家と十分にシミュレーションを行うことを提案します。</p>
+                </div>
+            </div>
+
+            <!-- Q6 & Q7 (統合的アプローチ) -->
+            <div class="bg-solar-base4 print-bg-dark border-2 border-solar-base02 print-border rounded-lg p-5 page-break-avoid shadow-md">
+                <h3 class="font-bold text-lg mb-3">Q. 役員や株主の構成について、今回の顧客へはどのように提案すべきですか？</h3>
+                <div class="mb-3">
+                    <strong class="text-sm bg-solar-base02 text-white px-2 py-1 rounded mr-2">重要・模範解答</strong>
+                    <p class="mt-2 text-solar-base02 font-bold">Aさんの「賃貸収入を長女Cさんと二女Dさんに均等に得られるようにしたい」という意向を踏まえ、CさんとDさんに法人の株式を均等に取得して株主となってもらい、両名とも役員に就任してもらうよう提案します。</p>
+                    <p class="mt-2 text-solar-base02 font-medium">これにより、役員報酬による生前の所得分散（実質的な財産移転）が可能となり、将来の相続においても、不動産そのものを共有させることなく、株式を均等に分けることで円滑に事業を承継できるメリットがあります。</p>
+                </div>
+                <div class="text-sm bg-white print-bg-light p-3 rounded mt-4 border border-solar-base1">
+                    <strong>【要注意】法人版事業承継税制について</strong><br>
+                    資産管理会社（不動産管理会社など）は原則として法人版事業承継税制の適用対象外です。面接でメリットを聞かれた際、安易に「事業承継税制が使える」と答えないよう注意が必要です。
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="text-center text-sm text-solar-base01 mt-12 pt-6 border-t border-solar-base1 page-break-avoid">
+        <p>End of Document - Good Luck on the Exam!</p>
+    </footer>
+
+</body>
+</html>
