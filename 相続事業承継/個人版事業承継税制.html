@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FP1級実技ケース分析：個人事業の承継③ 個人版事業承継税制</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            solar: {
+              base03: '#002b36',
+              base02: '#073642', // 見出し・強調
+              base01: '#586e75',
+              base00: '#657b83', // 基本テキスト
+              base0:  '#839496',
+              base1:  '#93a1a1', // ボーダー
+              base2:  '#eee8d5', // ハイライト背景(薄)
+              base3:  '#fdf6e3', // 全体背景(Solarized Light)
+              base4:  '#e5e0c8', // ハイライト背景(濃・強み等)
+            }
+          },
+          fontSize: {
+            'base': '18px', // E-ink/Kindleでの視認性確保
+            'lg': '20px',
+            'xl': '24px',
+            '2xl': '28px',
+          },
+          lineHeight: {
+            'relaxed': '1.8',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Google HTML/CSS Style Guide準拠・タイポグラフィ最適化 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #fdf6e3;
+      color: #657b83;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4, h5, h6, strong {
+      color: #073642;
+    }
+    
+    /* 印刷・PDF化時の改ページ・表示制御 */
+    .page-break-avoid {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    @media print {
+      body {
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 14pt;
+      }
+      h1, h2, h3, h4, strong {
+        color: #000000;
+      }
+      .print-border {
+        border: 1px solid #999999 !important;
+      }
+      .print-bg-dark {
+        background-color: #e0e0e0 !important;
+      }
+      .print-bg-light {
+        background-color: #f5f5f5 !important;
+      }
+      .print-shadow-none {
+        box-shadow: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="py-8 px-4 md:px-12 max-w-4xl mx-auto leading-relaxed">
+
+  <!-- ヘッダー -->
+  <header class="mb-12 border-b-2 border-solar-base1 pb-6 page-break-avoid">
+    <div class="text-sm font-bold text-solar-base01 mb-2 tracking-widest">FP1級実技 ケーススタディ復習シート</div>
+    <h1 class="font-bold leading-tight mb-4 text-3xl md:text-4xl">個人事業の承継③<br>個人版事業承継税制と承継スキームの選択</h1>
+    <p class="text-solar-base01 font-bold text-lg">相談者：Aさん（65歳・美容業 個人事業主）</p>
+  </header>
+
+  <!-- 1. FP目線全体像 -->
+  <section class="mb-12 page-break-avoid">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+      1. FP目線全体像（問題の本質とFPとしての結論）
+    </h2>
+    <div class="bg-solar-base2 print-bg-light p-6 rounded-lg print-border">
+      <h3 class="font-bold text-xl mb-2">問題の本質</h3>
+      <p class="mb-4">
+        後継者である長女Cさんへの円滑な美容院の事業承継（店舗不動産等の移転）と、多額（約7,200万円）が見込まれる相続税負担の軽減。また、「長男Dには遺産を渡さないが納得してくれるだろう」というAさんの主観的希望に潜む、<strong>「遺留分侵害額請求」という極めて高い争族リスクの回避</strong>が最大の課題である。
+      </p>
+      <h3 class="font-bold text-xl mb-2">FPとしての結論（提案の方向性）</h3>
+      <p>
+        金融機関から提案された「個人版事業承継税制」は、納税猶予の恩恵は大きいものの、「事業の継続（事業廃止で猶予打ち切り）」や「小規模宅地等の特例との併用不可」という制約がある。Aさんが将来の「法人化」を、Cさんが「多角化」を視野に入れている状況下では、制度の厳格な縛りが将来の足枷となるリスクが高い。<br><br>
+        したがって、柔軟性の高い<strong>「小規模宅地等の特例（特定事業用宅地等：400㎡まで80%減額）」</strong>を選択し、店舗土地（1億5,000万円）の評価を大幅に引き下げるスキームを第一選択として推奨する。また、長男Dの遺留分（約4,250万円）対策として、生命保険の活用や代償分割資金の準備を急務として提案する。
+      </p>
+    </div>
+  </section>
+
+  <!-- 2. 5W1H分析 -->
+  <section class="mb-12 page-break-avoid">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+      2. 5W1H分析
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-base">
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+        <span class="font-bold text-solar-base02 block mb-1">Who (誰が)</span>
+        Aさん(65歳)、妻Bさん(60歳)、長女Cさん(34歳・後継者)、長男Dさん(30歳・非後継者)
+      </div>
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+        <span class="font-bold text-solar-base02 block mb-1">What (何を)</span>
+        X店（美容業）の事業用資産の円滑な承継と、巨額の相続税・遺留分問題の解決を
+      </div>
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+        <span class="font-bold text-solar-base02 block mb-1">When (いつ)</span>
+        Aさんの生前（事業承継計画の策定・法人化検討）から将来の相続発生時まで
+      </div>
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light">
+        <span class="font-bold text-solar-base02 block mb-1">Where (どこで)</span>
+        閑静な住宅街にあるX店（店舗兼土地）および自宅について
+      </div>
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light md:col-span-2">
+        <span class="font-bold text-solar-base02 block mb-1">Why (なぜ)</span>
+        事業リスクを背負う長女Cに財産を集中させつつ、妻Bの生活を守り、後継者の重税負担を回避するため。
+      </div>
+      <div class="border border-solar-base1 print-border p-4 rounded bg-white print-bg-light md:col-span-2">
+        <span class="font-bold text-solar-base02 block mb-1">How (どのように)</span>
+        税制特例（小規模宅地 vs 個人版事業承継税制）の比較、遺留分対策（除外合意、生命保険）、法人化の是非を専門家を交えて検討し実行する。
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. SWOT分析 -->
+  <section class="mb-12 page-break-avoid">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+      3. SWOT分析
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-solar-base4 print-bg-dark p-5 rounded-lg border border-solar-base1 print-border">
+        <h3 class="font-bold text-lg mb-3 flex items-center">
+          <span class="inline-block w-6 h-6 bg-solar-base02 text-white text-sm text-center leading-6 rounded-full mr-2">S</span>
+          強み (Strengths)
+        </h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>固定客中心の安定した経営基盤（年商2,000万円/所得900万円）</li>
+          <li>長女Cさんという意欲的で明確な後継者が存在していること</li>
+          <li>店舗立地の資産価値が非常に高い（土地だけで1億5,000万円）</li>
+        </ul>
+      </div>
+      <div class="bg-solar-base4 print-bg-dark p-5 rounded-lg border border-solar-base1 print-border">
+        <h3 class="font-bold text-lg mb-3 flex items-center">
+          <span class="inline-block w-6 h-6 bg-solar-base02 text-white text-sm text-center leading-6 rounded-full mr-2">O</span>
+          機会 (Opportunities)
+        </h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>各種税制優遇（小規模宅地等の特例、個人版事業承継税制）の活用余地</li>
+          <li>長女Cさんの意向による事業の多角化や将来の法人化による成長余地</li>
+          <li>遺留分に関する民法特例（除外合意など）の活用余地</li>
+        </ul>
+      </div>
+      <div class="bg-solar-base2 print-bg-light p-5 rounded-lg border border-solar-base1 print-border">
+        <h3 class="font-bold text-lg mb-3 flex items-center">
+          <span class="inline-block w-6 h-6 bg-solar-base01 text-white text-sm text-center leading-6 rounded-full mr-2">W</span>
+          弱み (Weaknesses)
+        </h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>資産の大半が不動産（店舗・自宅）であり、納税資金や代償分割資金としての現預金（5,000万円）が不足気味であること</li>
+          <li>Aさんの事業承継税制に関する理解不足</li>
+        </ul>
+      </div>
+      <div class="bg-solar-base2 print-bg-light p-5 rounded-lg border border-solar-base1 print-border">
+        <h3 class="font-bold text-lg mb-3 flex items-center">
+          <span class="inline-block w-6 h-6 bg-solar-base01 text-white text-sm text-center leading-6 rounded-full mr-2">T</span>
+          脅威 (Threats)
+        </h3>
+        <ul class="list-disc pl-5 space-y-2 text-red-800 font-medium">
+          <li>特例適用前の想定相続税額（約7,200万円）という重い税負担</li>
+          <li><strong>「長男Dは納得するだろう」という思い込みによる、将来の遺留分侵害額請求（争族）の発生リスク（長男Dの遺留分は総資産の1/8＝約4,250万円）</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 資産・家族構成の図表要約 -->
+  <section class="mb-12 page-break-avoid">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+      4. 資産・家族構成 要約
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse border border-solar-base1 print-border bg-white print-bg-light">
+        <thead>
+          <tr class="bg-solar-base2 print-bg-dark">
+            <th class="border border-solar-base1 print-border p-3 w-1/4">項目</th>
+            <th class="border border-solar-base1 print-border p-3 w-3/4">詳細</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="border border-solar-base1 print-border p-3 bg-solar-base2 print-bg-dark">家族（推定相続人）</th>
+            <td class="border border-solar-base1 print-border p-3">
+              <ul class="list-disc pl-5">
+                <li><strong>妻Bさん（60歳）</strong>：配偶者（法定相続分 1/2）</li>
+                <li><strong>長女Cさん（34歳）</strong>：後継者・同居（法定相続分 1/4）</li>
+                <li><strong>長男Dさん（30歳）</strong>：非後継者・別居（法定相続分 1/4、<strong>遺留分 1/8</strong>）</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <th class="border border-solar-base1 print-border p-3 bg-solar-base2 print-bg-dark">所有資産（計3.4億円）</th>
+            <td class="border border-solar-base1 print-border p-3">
+              <ul class="list-disc pl-5">
+                <li><strong>現預金</strong>：5,000万円</li>
+                <li><strong>店舗（計2.2億円）</strong>：土地 1.5億円（300㎡）/ 建物 5,000万円 / 内装・設備 2,000万円</li>
+                <li><strong>自宅（計7,000万円）</strong>：土地 6,000万円（200㎡）/ 建物 1,000万円</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5. 提案プランと効果の図表 -->
+  <section class="mb-12 page-break-avoid">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3">
+      5. プラン比較（銀行提案 vs FP推奨プラン）
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 銀行提案 -->
+      <div class="border-2 border-solar-base1 print-border p-5 rounded bg-white">
+        <h3 class="font-bold text-xl text-center mb-4 pb-2 border-b border-solar-base1">銀行提案<br>（個人版事業承継税制）</h3>
+        <div class="mb-4">
+          <strong class="block text-solar-base02 mb-1">【税務面の効果】</strong>
+          <p>店舗の土地・建物・償却資産にかかる贈与税・相続税が100%納税猶予される。当面の資金繰りは極めて楽になる。</p>
+        </div>
+        <div>
+          <strong class="block text-solar-base02 mb-1">【経営面の制約・リスク】</strong>
+          <p class="text-red-700">原則として長女Cが「個人事業主」として事業を継続し続ける必要がある。廃業や資産譲渡時には利子税を含めた一括納付リスクがある。将来の「法人化」手続き（法人成り特例）は要件が極めて厳格で、経営の柔軟性が失われる。</p>
+        </div>
+      </div>
+      
+      <!-- FP推奨 -->
+      <div class="border-2 border-solar-base02 print-border p-5 rounded bg-solar-base4 print-bg-dark shadow-md relative">
+        <div class="absolute -top-3 left-4 bg-solar-base02 text-white text-sm font-bold px-3 py-1 rounded">FP推奨</div>
+        <h3 class="font-bold text-xl text-center mb-4 pb-2 border-b border-solar-base01">特例の併用＋遺留分対策<br>（小規模宅地特例＋生前対策）</h3>
+        <div class="mb-4">
+          <strong class="block text-solar-base02 mb-1">【税務面の効果】</strong>
+          <p>店舗土地（300㎡）全域に<strong>小規模宅地等の特例（特定事業用）</strong>を適用し、評価額を1.5億円→3,000万円（80%減）に圧縮。事業承継税制のような厳格な継続要件や取消リスクを回避できる。</p>
+        </div>
+        <div>
+          <strong class="block text-solar-base02 mb-1">【経営・争族面の対策】</strong>
+          <p>特例適用後、Cさんの裁量で自由なタイミングで法人化や事業多角化が可能。さらに、長男Dの遺留分（約4,250万円）対策として、Aさんを被保険者とする生命保険（受取人C）に加入し、CがDへ支払う「代償分割資金」を確保する。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Q&Aと実務解説 -->
+  <section class="mb-8">
+    <h2 class="text-2xl font-bold mb-6 flex items-center border-l-4 border-solar-base02 pl-3 page-break-avoid">
+      6. 面接対策 Q&A（解答のブラッシュアップとFP実務解説）
+    </h2>
+    <div class="space-y-8">
+
+      <!-- Q2 -->
+      <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid print-shadow-none shadow-sm">
+        <h3 class="font-bold text-xl mb-3">Q. 個人版事業承継税制のメリットとデメリットを教えてください。</h3>
+        <div class="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">【あなたの回答】</p>
+          <p class="text-gray-700">メリットとしては、実質的に個人事業の承継が続くと相続税が免除され続けるの点です。デメリットは特定事業用財産の全てを相続する必要があるので、後継者が事業を完全に継ぐ意思がないと実質的に利用できない点と、小規模宅地の評価減の特例との併用ができないので、想定より節税効果が得られない点です。</p>
+        </div>
+        <div class="mb-3">
+          <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+          <p class="mt-2 text-solar-base02 font-medium">メリットは、贈与税や相続税の支払いが猶予されることにより、資金繰りの悪化を回避できることです。デメリットは、承継後に事業を継続しなくてはならないことや、同じ土地に対して小規模宅地の特例が使えなくなることが挙げられます。</p>
+        </div>
+        <div class="text-base bg-solar-base3 p-4 rounded border border-solar-base1">
+          <strong>📝 FPの視点：</strong><br>
+          あなたの回答は実務的で素晴らしい視点を持っています！「小規模宅地等の特例との併用不可」という最大のデメリットを自力で導き出せている点は高く評価されます。面接ではさらに「事業継続要件を満たせず打ち切りになった際、利子税を含めた一括納付のペナルティがあるリスク」を付け加えられると完璧です。
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="bg-solar-base4 print-bg-dark border-2 border-solar-base02 print-border rounded-lg p-5 page-break-avoid shadow-md print-shadow-none">
+        <h3 class="font-bold text-xl mb-3 text-red-800">Q. 今回のケースでは、小規模宅地の特例とどちらを適用すべきですか？【超重要】</h3>
+        <div class="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">【あなたの回答】</p>
+          <p class="text-gray-700">店舗と自宅の地価を比較すると、店舗の地価がかなり高額ですので、個人版事業承継税制を利用する方が節税効果が高いので適用すべきと提案できます。</p>
+        </div>
+        <div class="mb-3">
+          <strong class="text-sm bg-solar-base02 text-white px-2 py-1 rounded mr-2">模範解答</strong>
+          <p class="mt-2 text-solar-base02 font-bold">Aさんが持っている店舗土地（300㎡）は、特定事業用宅地等として小規模宅地の特例により80％減額することができます。個人版事業承継税制は全額猶予ですが、将来の法人化も検討していることや、事業継続の厳格な要件を考慮すると、制約が少なく効果の高い「小規模宅地の特例」を適用する方が良いと考えられます。</p>
+        </div>
+        <div class="text-base bg-white print-bg-light p-4 rounded mt-4 border border-solar-base1">
+          <strong>📝 FPの視点（なぜあなたの回答を修正すべきか）：</strong><br>
+          地価が高額だからこそ、「事業承継税制」で全額猶予を狙いたくなる気持ちはよくわかります。しかし、店舗土地1.5億円に「小規模宅地等の特例」を適用すると、評価額は一気に<strong>3,000万円（1.2億円の圧縮）</strong>まで下がります。<br>
+          この時点で税負担は劇的に下がっており、わざわざ「将来法人化しづらくなる」「廃業したら一括納税させられる」という<strong>個人版事業承継税制の重い足枷をはめる必要性がありません。</strong>設例にある「Aさんは法人化も検討したいと思っている」という一文が、小規模宅地等の特例へ誘導するための強烈なヒントになっています。
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="bg-white print-bg-light border border-solar-base1 print-border rounded-lg p-5 page-break-avoid print-shadow-none shadow-sm">
+        <h3 class="font-bold text-xl mb-3">Q. 個人事業の場合、遺留分の民法特例は使えますか？</h3>
+        <div class="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
+          <p class="text-sm text-gray-500 mb-1">【あなたの回答】</p>
+          <p class="text-gray-700">除外合意については利用可能です。</p>
+        </div>
+        <div class="mb-3">
+          <strong class="text-sm bg-solar-base2 text-solar-base01 px-2 py-1 rounded mr-2">模範解答</strong>
+          <p class="mt-2 text-solar-base02 font-medium">先代事業者が持つ事業用資産の全部を贈与した場合に限り、除外合意のみ適用することができます。（※固定合意は適用不可）</p>
+        </div>
+        <div class="text-base bg-solar-base3 p-4 rounded border border-solar-base1">
+          <strong>📝 FPの視点と実務上の注意：</strong><br>
+          知識としては正解です。しかし、面接官が本当に聞きたいのは「制度の有無」の先にある「Aさんへのアドバイス」です。<br>
+          Aさんは<strong>「長男Dには遺産を渡さないが、納得してくれるだろう」という極めて危険な思い込み</strong>を持っています。総資産3.4億円に対する長男Dの遺留分は1/8の「4,250万円」にのぼります。FPとしては、「納得してくれるだろうという希望的観測に頼るのではなく、万一に備えて長女CがDに払うための代償分割資金を『生命保険』で準備すべき」と提言することが、顧客本位の対応として最高評価につながります。
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="text-center text-sm text-solar-base01 mt-12 pt-6 border-t border-solar-base1 page-break-avoid">
+    <p>End of Document - 呼吸と心を整え、実技試験突破を応援しています！</p>
+  </footer>
+
+</body>
+</html>
