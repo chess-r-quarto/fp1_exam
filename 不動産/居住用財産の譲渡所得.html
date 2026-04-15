@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>居住用財産の譲渡特例 時系列早見表</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 p-4 md:p-8">
+  <div id="root"></div>
+
+  <!-- TSXをブラウザ上で解釈・コンパイルするためのBabelカスタムプリセット設定 -->
+  <script type="text/babel">
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+
+  <!-- アプリケーション本体 -->
+  <script type="text/babel" data-presets="tsx">
+    const { FC, ReactNode } = React;
+
+    interface FeatureCardProps {
+      title: string;
+      period: string;
+      content: ReactNode;
+      colorClass: string;
+      bgClass: string;
+    }
+
+    const FeatureCard: FC<FeatureCardProps> = ({ title, period, content, colorClass, bgClass }) => (
+      <div className={`border-l-4 ${colorClass} bg-white rounded-r-lg shadow-sm overflow-hidden flex flex-col`}>
+        <div className={`${bgClass} px-4 py-3 border-b border-gray-100 flex justify-between items-center`}>
+          <h3 className="font-bold text-lg text-gray-800">{title}</h3>
+          <span className="bg-white text-xs font-bold px-2 py-1 rounded-full border shadow-sm whitespace-nowrap">
+            所有 {period}
+          </span>
+        </div>
+        <div className="p-4 flex-grow text-gray-700">
+          {content}
+        </div>
+      </div>
+    );
+
+    const App: FC = () => {
+      return (
+        <div className="max-w-5xl mx-auto font-sans">
+          <header className="mb-8 text-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">居住用財産の譲渡所得の特例</h1>
+            <p className="text-slate-600">所有期間・居住期間に応じた特例の適用関係タイムライン</p>
+          </header>
+          
+          {/* タイムライン部分 */}
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 border-b pb-4">
+              <h2 className="text-xl font-bold text-slate-800">
+                譲渡した年の<span className="text-red-600">1月1日時点</span>の所有期間
+              </h2>
+              <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-semibold mt-2 md:mt-0">
+                基準日に要注意
+              </span>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <div className="min-w-[700px] relative pt-8 pb-4 pr-4">
+                {/* 目盛りテキスト */}
+                <div className="absolute top-0 w-full h-6 text-sm font-bold">
+                  <span className="absolute left-0 text-gray-500">取得日</span>
+                  <span className="absolute left-1/3 -translate-x-1/2 text-blue-600">5年超</span>
+                  <span className="absolute left-2/3 -translate-x-1/2 text-green-600">10年超</span>
+                </div>
+                
+                {/* 軸線 */}
+                <div className="w-full h-2 bg-gray-200 rounded-full flex mb-4 relative">
+                  <div className="absolute left-1/3 w-px h-6 bg-gray-400 -top-2"></div>
+                  <div className="absolute left-2/3 w-px h-6 bg-gray-400 -top-2"></div>
+                </div>
+
+                {/* 帯: 3,000万円特別控除 */}
+                <div className="flex mb-3 hover:opacity-90 transition-opacity">
+                   <div className="w-full bg-orange-100 border border-orange-300 text-orange-800 flex items-center justify-center py-2 text-sm rounded-md font-semibold shadow-sm">
+                     <div className="text-center">居住用財産の3,000万円特別控除<br/><span className="text-xs text-orange-600">（所有期間の要件なし）</span></div>
+                   </div>
+                </div>
+
+                {/* 帯: 短期譲渡 */}
+                <div className="flex mb-3 hover:opacity-90 transition-opacity">
+                   <div className="w-1/3 bg-red-100 border-l border-y border-red-300 text-red-800 flex items-center justify-center py-2 text-sm rounded-l-md font-semibold shadow-sm">
+                     <div className="text-center">短期譲渡所得<br/><span className="text-xs">39.63%</span></div>
+                   </div>
+                   <div className="w-2/3 bg-slate-50 border-y border-r border-slate-200 border-dashed rounded-r-md"></div>
+                </div>
+
+                {/* 帯: 長期譲渡 */}
+                <div className="flex mb-3 hover:opacity-90 transition-opacity">
+                   <div className="w-1/3 bg-slate-50 border-y border-l border-slate-200 border-dashed rounded-l-md"></div>
+                   <div className="w-2/3 bg-blue-100 border border-blue-300 text-blue-800 flex items-center justify-center py-2 text-sm rounded-r-md font-semibold shadow-sm">
+                     <div className="text-center">長期譲渡所得<br/><span className="text-xs">20.315%</span></div>
+                   </div>
+                </div>
+
+                {/* 帯: 軽減税率 */}
+                <div className="flex mb-3 hover:opacity-90 transition-opacity">
+                   <div className="w-2/3 bg-slate-50 border-y border-l border-slate-200 border-dashed rounded-l-md"></div>
+                   <div className="w-1/3 bg-green-100 border border-green-300 text-green-800 flex items-center justify-center py-2 text-sm rounded-r-md font-semibold shadow-sm relative">
+                     <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-2 border-green-300 rounded-full flex items-center justify-center text-xs font-bold text-green-600">＋</div>
+                     <div className="text-center">軽減税率の特例<br/><span className="text-xs">14.21% (6,000万円以下)</span></div>
+                   </div>
+                </div>
+
+                {/* 帯: 買換え特例 */}
+                <div className="flex hover:opacity-90 transition-opacity">
+                   <div className="w-2/3 bg-slate-50 border-y border-l border-slate-200 border-dashed rounded-l-md"></div>
+                   <div className="w-1/3 bg-purple-100 border border-purple-300 text-purple-800 flex items-center justify-center py-2 text-sm rounded-r-md font-semibold shadow-sm">
+                     <div className="text-center">特定の居住用財産の買換えの特例<br/><span className="text-xs text-purple-600">(＋居住期間10年以上)</span></div>
+                   </div>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-slate-500 mt-4 bg-slate-50 p-3 rounded">
+              ※所有期間の判定は、実際に譲渡した日ではなく、<strong className="text-slate-700">「譲渡した年の1月1日」</strong>時点で行われる点に注意が必要です。
+            </p>
+          </div>
+
+          {/* 詳細解説カード部分 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+             <FeatureCard 
+                title="居住用財産の3,000万円特別控除"
+                period="要件なし"
+                colorClass="border-orange-500"
+                bgClass="bg-orange-50"
+                content={
+                  <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><span className="font-semibold text-slate-800">要件:</span> 居住用財産を譲渡すること（所有期間の長さは問わない）。</li>
+                    <li><span className="font-semibold text-slate-800">効果:</span> 譲渡益から最高<strong className="text-orange-600 text-base">3,000万円</strong>を控除できる。</li>
+                    <li>前年や前々年にこの特例や買換え特例などを受けていないこと等の制限があります。</li>
+                  </ul>
+                }
+             />
+
+             <FeatureCard 
+                title="基本: 長期譲渡所得"
+                period="5年超"
+                colorClass="border-blue-500"
+                bgClass="bg-blue-50"
+                content={
+                  <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><span className="font-semibold text-slate-800">要件:</span> 譲渡した年の1月1日において所有期間が5年を超えること。</li>
+                    <li><span className="font-semibold text-slate-800">税率:</span> <strong className="text-blue-600 text-base">20.315%</strong><br/>
+                      <span className="text-xs text-slate-500">（所得税15%、復興特別所得税0.315%、住民税5%）</span>
+                    </li>
+                    <li>居住用財産に限らず、土地・建物の譲渡に広く適用されます。</li>
+                  </ul>
+                }
+             />
+
+             <FeatureCard 
+                title="軽減税率の特例"
+                period="10年超"
+                colorClass="border-green-500"
+                bgClass="bg-green-50"
+                content={
+                  <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><span className="font-semibold text-slate-800">要件:</span> 譲渡した年の1月1日において所有期間が10年を超える<strong className="underline">居住用財産</strong>であること。</li>
+                    <li><span className="font-semibold text-slate-800">税率 (6,000万円以下の部分):</span> <strong className="text-green-600 text-base">14.21%</strong><br/>
+                      <span className="text-xs text-slate-500">（所得税10%、復興特別所得税0.21%、住民税4%）</span>
+                    </li>
+                    <li><span className="font-semibold text-slate-800">税率 (6,000万円超の部分):</span> 20.315%（通常の長期譲渡と同じ）</li>
+                  </ul>
+                }
+             />
+
+             <FeatureCard 
+                title="特定の居住用財産の買換えの特例"
+                period="10年超"
+                colorClass="border-purple-500"
+                bgClass="bg-purple-50"
+                content={
+                  <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><span className="font-semibold text-slate-800">要件:</span> 譲渡した年の1月1日において所有期間が10年を超え、かつ、<strong className="text-purple-600 border-b border-purple-400">居住期間が10年以上</strong>であること。</li>
+                    <li>譲渡対価が<strong className="text-slate-800">1億円以下</strong>であること。</li>
+                    <li><span className="font-semibold text-slate-800">効果:</span> 譲渡益に対する課税を将来に<strong className="underline">繰り延べる</strong>（免税ではありません）。</li>
+                  </ul>
+                }
+             />
+
+             <FeatureCard 
+                title="参考: 短期譲渡所得"
+                period="5年以下"
+                colorClass="border-red-500"
+                bgClass="bg-red-50"
+                content={
+                  <ul className="list-disc pl-5 space-y-2 text-sm">
+                    <li><span className="font-semibold text-slate-800">要件:</span> 譲渡した年の1月1日において所有期間が5年以下であること。</li>
+                    <li><span className="font-semibold text-slate-800">税率:</span> <strong className="text-red-600 text-base">39.63%</strong><br/>
+                      <span className="text-xs text-slate-500">（所得税30%、復興特別所得税0.63%、住民税9%）</span>
+                    </li>
+                    <li>長期譲渡所得に比べて税負担が約2倍重くなります。</li>
+                  </ul>
+                }
+             />
+          </div>
+
+          {/* 併用関係まとめ */}
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2 flex items-center text-slate-800">
+              <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              試験対策：各特例の併用関係
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-collapse text-sm text-center">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700">
+                    <th className="border border-slate-200 px-4 py-3 text-left">特例の組み合わせ</th>
+                    <th className="border border-slate-200 px-4 py-3 w-28">併用</th>
+                    <th className="border border-slate-200 px-4 py-3 text-left">解説</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-slate-50">
+                    <td className="border border-slate-200 px-4 py-3 text-left font-medium">3,000万円特別控除 <br/><span className="text-xs text-slate-400">＋</span><br/> 軽減税率の特例 (10年超)</td>
+                    <td className="border border-slate-200 px-4 py-3 text-blue-600 font-bold bg-blue-50">〇 可能</td>
+                    <td className="border border-slate-200 px-4 py-3 text-left text-xs text-slate-600">
+                      譲渡益から3,000万円を差し引き、残った利益に対して低い税率(14.21%等)を適用できる、<strong className="text-slate-800">最も節税効果が高い</strong>組み合わせです。
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="border border-slate-200 px-4 py-3 text-left font-medium">3,000万円特別控除 <br/><span className="text-xs text-slate-400">＋</span><br/> 買換えの特例</td>
+                    <td className="border border-slate-200 px-4 py-3 text-red-600 font-bold">× 不可</td>
+                    <td className="border border-slate-200 px-4 py-3 text-left text-xs text-slate-600">
+                      どちらか一方を<strong className="text-slate-800">選択して適用</strong>する必要があります。
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50">
+                    <td className="border border-slate-200 px-4 py-3 text-left font-medium">軽減税率の特例 (10年超) <br/><span className="text-xs text-slate-400">＋</span><br/> 買換えの特例</td>
+                    <td className="border border-slate-200 px-4 py-3 text-red-600 font-bold">× 不可</td>
+                    <td className="border border-slate-200 px-4 py-3 text-left text-xs text-slate-600">
+                      こちらも選択適用です。（買換え特例は3,000万円特別控除・軽減税率のセットとは併用できません）
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+        </div>
+      );
+    };
+
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(<App />);
+    }
+  </script>
+</body>
+</html>
