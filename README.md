@@ -12,6 +12,10 @@ This repository contains study materials and resources for the **Financial Plann
 
 ## 🚀 Getting Started
 
+You can access the study modules directly online via GitHub Pages:
+**👉 [Open Launcher Dashboard](https://chess-r-quarto.github.io/fp1_exam/launcher.html)**
+
+Alternatively, to run locally:
 1. Open `launcher.html` in your favorite web browser.
 2. Use the dashboard to navigate through different study modules.
 3. Each module contains specific HTML notes and exercises.
