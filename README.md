@@ -6,7 +6,7 @@ This repository contains study materials and resources for the **Financial Plann
 
 ## 📂 Project Structure
 
-- **[不動産](不動産)**: Real Estate, property taxes, and related laws.
+- **[不動産](不動産)**: Real Estate, property taxes, and related laws (including recent updates for 空き家譲渡の特例).
 - **[相続事業承継](相続事業承継)**: Inheritance, Business Succession, and Estate Planning.
 - **[launcher.html](launcher.html)**: A premium, Anaconda Navigator-inspired dashboard to access all modules easily.
 
