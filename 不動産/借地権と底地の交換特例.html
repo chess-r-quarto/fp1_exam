@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>借地権と底地の等価交換 特例解説ツール</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel standalone for TSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    // Register custom TSX preset for Babel
+    Babel.registerPreset('tsx', {
+      presets: [
+        [Babel.availablePresets['typescript'], { isTSX: true, allExtensions: true }],
+        Babel.availablePresets['react']
+      ]
+    });
+  </script>
+  
+  <style>
+    body { font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8">
+  <div id="root" class="max-w-4xl mx-auto"></div>
+
+  <script type="text/babel" data-presets="tsx">
+    const { useState, useEffect } = React;
+
+    const App = () => {
+      // Simulator State
+      const [totalArea, setTotalArea] = useState<number>(800);
+      const [totalValue, setTotalValue] = useState<number>(10000);
+      const [leaseholdRatio, setLeaseholdRatio] = useState<number>(60);
+
+      // Calculations
+      const ownerRatio = 100 - leaseholdRatio;
+      
+      const leaseholderArea = (totalArea * leaseholdRatio) / 100;
+      const leaseholderValue = (totalValue * leaseholdRatio) / 100;
+      
+      const ownerArea = (totalArea * ownerRatio) / 100;
+      const ownerValue = (totalValue * ownerRatio) / 100;
+
+      useEffect(() => {
+        // Initialize Lucide icons
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+
+      return (
+        <div class="space-y-8">
+          {/* Header */}
+          <header class="bg-blue-800 text-white p-6 rounded-t-2xl shadow-lg">
+            <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-3">
+              <i data-lucide="arrow-left-right" class="w-8 h-8"></i>
+              借地権と底地（貸宅地）の等価交換
+            </h1>
+            <p class="mt-2 opacity-90 text-sm md:text-base">
+              FP向け顧客説明ツール：複雑な権利関係を「固定資産の交換の特例」を用いて解消するメリットと面積按分を視覚化します。
+            </p>
+          </header>
+
+          <main class="bg-white p-6 md:p-8 rounded-b-2xl shadow-lg border border-gray-100 space-y-12 mt-0">
+            
+            {/* Section 1: Concept */}
+            <section>
+              <h2 class="text-xl font-bold text-gray-700 border-b-2 border-blue-200 pb-2 mb-6 flex items-center gap-2">
+                <i data-lucide="book-open" class="text-blue-600"></i>
+                1. 権利の「数式」を理解する
+              </h2>
+              <div class="bg-blue-50 p-6 rounded-xl text-center">
+                <p class="text-gray-600 mb-4 font-medium">路線価制度における大前提となる考え方です。</p>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-lg md:text-xl font-bold">
+                  <div class="bg-white px-6 py-4 rounded-lg shadow-sm border border-gray-200 text-blue-800">
+                    完全な所有権<br/><span class="text-sm font-normal text-gray-500">（更地：100%の価値）</span>
+                  </div>
+                  <div class="text-gray-400 text-3xl">=</div>
+                  <div class="bg-green-100 px-6 py-4 rounded-lg shadow-sm border border-green-200 text-green-800">
+                    借地権<br/><span class="text-sm font-normal text-green-700">（借りる強い権利）</span>
+                  </div>
+                  <div class="text-gray-400 text-3xl">+</div>
+                  <div class="bg-orange-100 px-6 py-4 rounded-lg shadow-sm border border-orange-200 text-orange-800">
+                    底地 / 貸宅地<br/><span class="text-sm font-normal text-orange-700">（貸している不自由な権利）</span>
+                  </div>
+                </div>
+                <div class="mt-6 text-left text-sm text-gray-600 bg-white p-4 rounded-lg border border-blue-100">
+                  <ul class="list-disc list-inside space-y-2">
+                    <li><strong>借地権：</strong> 他人の土地に建物を建てて利用する権利。旧法では非常に保護され、財産的価値が高い（エリアにより60〜70%を占める）。</li>
+                    <li><strong>底地（貸宅地）：</strong> 土地の所有権はあるが、借地人に占有されているため自由に使えず、地代を受け取る程度の制限された権利。</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Section 2: Exchange Mechanism */}
+            <section>
+              <h2 class="text-xl font-bold text-gray-700 border-b-2 border-blue-200 pb-2 mb-6 flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="text-blue-600"></i>
+                2. 特例による「不完全」から「完全」への交換
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Before */}
+                <div class="border border-gray-200 rounded-xl p-5 bg-gray-50 relative">
+                  <div class="absolute -top-3 left-4 bg-gray-600 text-white px-3 py-1 text-xs font-bold rounded-full">交換前（Before）</div>
+                  <div class="mt-4 flex h-32 rounded-lg overflow-hidden shadow-inner border border-gray-300">
+                    <div class="w-[60%] bg-green-200 flex flex-col justify-center items-center text-green-800 p-2 border-r border-gray-400">
+                      <span class="font-bold text-lg">借地権 (60%)</span>
+                      <span class="text-xs text-center mt-1">借地人が保有<br/>（強いが他人の土地）</span>
+                    </div>
+                    <div class="w-[40%] bg-orange-200 flex flex-col justify-center items-center text-orange-800 p-2">
+                      <span class="font-bold text-lg">底地 (40%)</span>
+                      <span class="text-xs text-center mt-1">地主が保有<br/>（自分のだか使えない）</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-4 text-center">一つの土地に2人の不完全な権利が混在し、<br/>お互いに身動きが取れない状態。</p>
+                </div>
+                
+                {/* Arrow for mobile */}
+                <div class="md:hidden flex justify-center items-center text-blue-500">
+                  <i data-lucide="arrow-down" class="w-8 h-8"></i>
+                </div>
+
+                {/* After */}
+                <div class="border border-blue-200 rounded-xl p-5 bg-blue-50 relative">
+                  <div class="absolute -top-3 left-4 bg-blue-600 text-white px-3 py-1 text-xs font-bold rounded-full">交換後（After）</div>
+                  <div class="mt-4 flex justify-between gap-4 h-32">
+                    <div class="w-[60%] bg-white rounded-lg shadow-md border-2 border-green-400 flex flex-col justify-center items-center p-2">
+                      <span class="font-bold text-green-700 text-lg">更地</span>
+                      <span class="text-xs text-center mt-1 text-gray-500">借地人が取得<br/>（100%自由にできる）</span>
+                    </div>
+                    <div class="w-[40%] bg-white rounded-lg shadow-md border-2 border-orange-400 flex flex-col justify-center items-center p-2">
+                      <span class="font-bold text-orange-700 text-lg">更地</span>
+                      <span class="text-xs text-center mt-1 text-gray-500">地主が取得<br/>（100%自由にできる）</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-4 text-center">価値の割合に応じて土地を物理的に分割（分筆）。<br/>面積は減るが、お互いが「完全な所有権」を得る。</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Section 3: Simulator */}
+            <section>
+              <h2 class="text-xl font-bold text-gray-700 border-b-2 border-blue-200 pb-2 mb-6 flex items-center gap-2">
+                <i data-lucide="calculator" class="text-blue-600"></i>
+                3. 等価交換シミュレーター
+              </h2>
+              
+              <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Inputs */}
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-1">対象地の全体面積 (㎡)</label>
+                      <input 
+                        type="number" 
+                        value={totalArea} 
+                        onChange={(e) => setTotalArea(Number(e.target.value) || 0)}
+                        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-gray-700 mb-1">対象地の全体評価額 (万円)</label>
+                      <input 
+                        type="number" 
+                        value={totalValue} 
+                        onChange={(e) => setTotalValue(Number(e.target.value) || 0)}
+                        class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                    </div>
+                    <div class="pt-2">
+                      <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">
+                        <span>路線価図の借地権割合 (%)</span>
+                        <span class="text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{leaseholdRatio}%</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        min="30" 
+                        max="90" 
+                        step="10" 
+                        value={leaseholdRatio} 
+                        onChange={(e) => setLeaseholdRatio(Number(e.target.value))}
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      />
+                      <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>30% (G)</span>
+                        <span>40% (F)</span>
+                        <span>50% (E)</span>
+                        <span>60% (D)</span>
+                        <span>70% (C)</span>
+                        <span>80% (B)</span>
+                        <span>90% (A)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Results Data */}
+                  <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col justify-center">
+                    <h3 class="text-center font-bold text-gray-600 mb-4 text-sm">交換後の取得内容（更地として）</h3>
+                    
+                    <div class="space-y-4">
+                      {/* Leaseholder Result */}
+                      <div class="flex items-center justify-between border-b pb-2">
+                        <div class="flex items-center gap-2">
+                          <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                          <span class="font-bold text-gray-700">借地人が取得</span>
+                        </div>
+                        <div class="text-right">
+                          <div class="font-bold text-lg text-green-700">{leaseholderArea.toLocaleString()} <span class="text-sm font-normal text-gray-500">㎡</span></div>
+                          <div class="text-sm text-gray-500">({leaseholderValue.toLocaleString()} 万円相当)</div>
+                        </div>
+                      </div>
+                      
+                      {/* Landowner Result */}
+                      <div class="flex items-center justify-between border-b pb-2">
+                        <div class="flex items-center gap-2">
+                          <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                          <span class="font-bold text-gray-700">地主が取得</span>
+                        </div>
+                        <div class="text-right">
+                          <div class="font-bold text-lg text-orange-700">{ownerArea.toLocaleString()} <span class="text-sm font-normal text-gray-500">㎡</span></div>
+                          <div class="text-sm text-gray-500">({ownerValue.toLocaleString()} 万円相当)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual Progress Bar */}
+              <div class="mt-4">
+                <p class="text-sm font-bold text-gray-600 mb-2">交換後の面積（価値）の分配イメージ</p>
+                <div class="h-12 w-full rounded-xl overflow-hidden flex shadow-inner border border-gray-300">
+                  <div 
+                    class="bg-green-500 flex items-center justify-center text-white font-bold text-sm transition-all duration-500 ease-in-out"
+                    style={{ width: `${leaseholdRatio}%` }}
+                  >
+                    借地人 {leaseholdRatio}%
+                  </div>
+                  <div 
+                    class="bg-orange-500 flex items-center justify-center text-white font-bold text-sm transition-all duration-500 ease-in-out"
+                    style={{ width: `${ownerRatio}%` }}
+                  >
+                    地主 {ownerRatio}%
+                  </div>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <div class="mt-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-800 rounded-r-lg">
+                <strong>💡 FP実務上のポイント：</strong><br/>
+                地主側からすると「自分の土地なのにこれだけしか残らないのか」と心理的な抵抗を感じるのが一般的です。提案時は、この分配比率（現実）を丁寧に説明し、「不自由な広い土地」より「自由に売却・活用できる手頃な更地」を得るメリットを強調することが重要です。
+              </div>
+
+            </section>
+          </main>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
