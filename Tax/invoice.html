@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インボイス制度：メリット・デメリット発生ケース</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#e0f2fe',
+                            DEFAULT: '#0284c7',
+                            dark: '#0369a1',
+                        },
+                        merit: '#10b981',
+                        demerit: '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- ヘッダー -->
+        <header class="text-center space-y-2 mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800"><i class="fa-solid fa-scale-balanced text-brand mr-3"></i>インボイス制度 メリット・デメリット図解</h1>
+            <p class="text-slate-600">〜FP1級視点：取引先との関係と財務への影響〜</p>
+        </header>
+
+        <!-- Section 1: 売り手（免税事業者）のケース -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 card-shadow border-t-4 border-brand">
+            <div class="flex items-center mb-6">
+                <div class="bg-brand text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold mr-4">1</div>
+                <h2 class="text-2xl font-bold">売り手（現在の免税事業者）の選択と影響</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 登録する（課税事業者になる） -->
+                <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-blue-100 text-brand px-4 py-1 font-bold rounded-bl-xl text-sm">選択 A</div>
+                    <h3 class="text-xl font-bold mb-4 text-center pb-2 border-b-2 border-slate-200">
+                        <i class="fa-solid fa-file-invoice text-brand mr-2"></i>登録する（課税事業者になる）
+                    </h3>
+                    
+                    <div class="space-y-4 mt-4">
+                        <div class="bg-green-50 border-l-4 border-merit p-4 rounded-r-lg">
+                            <h4 class="font-bold text-merit mb-2"><i class="fa-solid fa-circle-arrow-up mr-2"></i>メリット</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li>取引先（課税事業者）が仕入税額控除できるため、**取引の継続・維持**がしやすい。</li>
+                                <li>インボイス必須の新規取引先を開拓できる可能性がある。</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-red-50 border-l-4 border-demerit p-4 rounded-r-lg">
+                            <h4 class="font-bold text-demerit mb-2"><i class="fa-solid fa-circle-arrow-down mr-2"></i>デメリット</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li>新たに**消費税の申告・納付義務**が発生し、実質的な手取り（利益）が減少する。</li>
+                                <li>インボイスの発行・保存など、事務負担が増大する。</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-yellow-50 p-3 rounded text-sm border border-yellow-200">
+                            <strong class="text-yellow-700"><i class="fa-solid fa-lightbulb mr-1"></i>FPの視点：激変緩和措置</strong><br>
+                            新たに課税事業者となる場合、売上税額の2割を納付額とする**「2割特例」**（※2026年9月30日を含む課税期間まで）を選択でき、納税・事務負担を大幅に軽減可能です。簡易課税の選択シミュレーションが必須です。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 登録しない（免税事業者のまま） -->
+                <div class="bg-slate-50 rounded-xl p-6 border border-slate-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-slate-200 text-slate-600 px-4 py-1 font-bold rounded-bl-xl text-sm">選択 B</div>
+                    <h3 class="text-xl font-bold mb-4 text-center pb-2 border-b-2 border-slate-200">
+                        <i class="fa-solid fa-user-shield text-slate-500 mr-2"></i>登録しない（免税事業者のまま）
+                    </h3>
+                    
+                    <div class="space-y-4 mt-4">
+                        <div class="bg-green-50 border-l-4 border-merit p-4 rounded-r-lg">
+                            <h4 class="font-bold text-merit mb-2"><i class="fa-solid fa-circle-arrow-up mr-2"></i>メリット</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li>消費税の納税義務がない（いわゆる益税の享受が続く）。</li>
+                                <li>消費税申告の事務負担が発生しない。</li>
+                                <li>取引先が**一般消費者**や**免税事業者**メインであれば影響はほぼ無い。</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-red-50 border-l-4 border-demerit p-4 rounded-r-lg">
+                            <h4 class="font-bold text-demerit mb-2"><i class="fa-solid fa-circle-arrow-down mr-2"></i>デメリット</h4>
+                            <ul class="list-disc pl-5 text-sm space-y-1">
+                                <li>取引先（課税事業者）が仕入税額控除できず税負担が増すため、**取引の打ち切り**や**値下げ要求**（消費税相当額のカット等）のリスクがある。</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-100 p-3 rounded text-sm border border-slate-200">
+                            <strong class="text-slate-700"><i class="fa-solid fa-magnifying-glass mr-1"></i>FPの視点：顧客属性の分析</strong><br>
+                            BtoB（企業間取引）が多い事業者は登録のプレッシャーが強い反面、BtoC（一般消費者向け：学習塾や理美容など）の事業者は、あえて登録しない選択肢も有力です。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: 買い手（課税事業者）のケース -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 card-shadow border-t-4 border-indigo-600">
+            <div class="flex items-center mb-6">
+                <div class="bg-indigo-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold mr-4">2</div>
+                <h2 class="text-2xl font-bold">買い手（原則課税の事業者）への影響</h2>
+            </div>
+
+            <!-- 取引関係図 -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 bg-indigo-50 p-4 rounded-xl">
+                <div class="bg-white p-3 rounded-lg border border-indigo-200 shadow-sm text-center font-bold w-40">
+                    自社<br><span class="text-xs font-normal text-slate-500">（原則課税の事業者）</span>
+                </div>
+                <div class="text-indigo-400 text-2xl flex flex-col items-center">
+                    <span><i class="fa-solid fa-money-bill-transfer"></i></span>
+                    <span class="text-xs font-bold">外注費・経費の支払い</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="bg-white p-3 rounded-lg border-2 border-brand shadow-sm text-center text-sm w-48">
+                        取引先A: インボイス発行事業者
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border-2 border-slate-300 shadow-sm text-center text-sm w-48 text-slate-500">
+                        取引先B: 免税事業者
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- インボイス発行事業者からの仕入れ -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold flex items-center">
+                        <span class="bg-brand text-white w-6 h-6 rounded inline-flex items-center justify-center mr-2 text-sm"><i class="fa-solid fa-check"></i></span>
+                        Aから仕入れた場合
+                    </h3>
+                    <div class="bg-white border border-slate-200 rounded-lg p-4">
+                        <div class="text-merit font-bold mb-1">【メリット】</div>
+                        <p class="text-sm">支払った消費税額を**全額「仕入税額控除」**できるため、自社の消費税納付額は適正に抑えられる。</p>
+                        <div class="text-demerit font-bold mt-3 mb-1">【デメリット】</div>
+                        <p class="text-sm">受け取った請求書が適格要件を満たしているか確認・保存する経理事務の負担が増加する。</p>
+                    </div>
+                </div>
+
+                <!-- 免税事業者からの仕入れ -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold flex items-center text-slate-600">
+                        <span class="bg-slate-400 text-white w-6 h-6 rounded inline-flex items-center justify-center mr-2 text-sm"><i class="fa-solid fa-xmark"></i></span>
+                        Bから仕入れた場合
+                    </h3>
+                    <div class="bg-white border border-slate-200 rounded-lg p-4">
+                        <div class="text-merit font-bold mb-1">【メリット】</div>
+                        <p class="text-sm text-slate-500">特になし。</p>
+                        <div class="text-demerit font-bold mt-3 mb-1">【デメリット】</div>
+                        <p class="text-sm">原則として**仕入税額控除ができない**。つまり、取引先に支払った消費税分だけ、自社が国に納める消費税額が増加する（＝<strong class="text-red-600">利益の減少</strong>）。</p>
+                        
+                        <div class="mt-3 bg-red-50 p-2 rounded border border-red-100 text-xs text-red-800">
+                            <strong>※経過措置（激変緩和）</strong><br>
+                            いきなり全額控除不可になるわけではなく、免税事業者からの仕入れでも一定割合の控除が認められます。<br>
+                            ・〜2026年9月：<strong>80%</strong>控除可能<br>
+                            ・〜2029年9月：<strong>50%</strong>控除可能
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-indigo-50 p-4 rounded-lg text-sm border border-indigo-100 flex items-start">
+                <i class="fa-solid fa-circle-exclamation text-indigo-500 mt-1 mr-3 text-lg"></i>
+                <div>
+                    <strong class="text-indigo-800">「簡易課税」を選択している場合の特例</strong><br>
+                    自社（買い手）が「簡易課税制度」を選択している場合、売上からみなし仕入率を用いて納税額を計算するため、**取引先がインボイス発行事業者か免税事業者かは納税額に一切影響しません**。免税事業者との取引を続けるうえでの有効な防衛策となります。
+                </div>
+            </div>
+
+        </section>
+
+        <footer class="text-center text-slate-500 text-sm py-4">
+            <p>※本図解はFP1級レベルの実務的視点を基に構成しています。具体的な税務判断は税理士にご相談ください。</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
