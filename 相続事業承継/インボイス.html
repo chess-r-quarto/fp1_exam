@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>インボイス制度：取引の流れと最終収支の計算</title>
+  <title>インボイス制度：取引の流れと最終収支・特例シミュレーター</title>
   
   <!-- React & ReactDOM -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -39,28 +39,41 @@
 
     const formatCurrency = (amount: number) => new Intl.NumberFormat('ja-JP').format(amount);
 
-    // --- コンポーネント：事業者・消費者ボックス ---
+    // ========================================
+    // コンポーネント：事業者・消費者ボックス
+    // ========================================
     const EntityBox = ({ 
       name, role, icon, 
       taxCollected, taxPaid, taxDeductible, taxToPay, 
       salesTotal, purchaseTotal,
-      isExempt, isConsumer, highlightDeduction 
+      badgeText, isConsumer, highlightDeduction, specialDeductionText, specialDeductionAmount 
     }: any) => {
-      // 収支計算式: 入金(売上合計) - 出金(仕入合計) - 納税額 = 最終収支
       const income = salesTotal || 0;
       const expense = purchaseTotal || 0;
       const tax = taxToPay || 0;
-      const netProfit = isConsumer ? -income : income - expense - tax;
+      const netProfit = isConsumer ? -expense : income - expense - tax;
+
+      // テーマカラーの決定
+      let themeColor = "blue";
+      if (isConsumer) themeColor = "pink";
+      else if (badgeText?.includes("免税")) themeColor = "amber";
+      else if (badgeText?.includes("特例") || badgeText?.includes("簡易")) themeColor = "emerald";
+
+      const borderClass = `border-${themeColor}-400`;
+      const bgLightClass = `bg-${themeColor}-50`;
+      const bgDarkClass = `bg-${themeColor}-600`;
+      const badgeBgClass = `bg-${themeColor}-100`;
+      const badgeTextClass = `text-${themeColor}-800`;
 
       return (
-        <div className={`relative w-[215px] bg-white rounded-2xl shadow-md border-t-4 flex flex-col overflow-hidden ${isConsumer ? 'border-pink-400' : isExempt ? 'border-amber-400' : 'border-blue-500'}`}>
+        <div className={`relative w-[220px] bg-white rounded-2xl shadow-md border-t-4 flex flex-col overflow-hidden border-${themeColor}-400`}>
           <div className="pt-4 pb-2 text-center">
             <div className="text-4xl mb-1">{icon}</div>
             <div className="font-black text-base">{name}</div>
-            <div className="text-[10px] text-slate-500 font-bold">{role}</div>
-            {isExempt && (
-              <div className="mt-1 bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-full inline-block">
-                免税事業者
+            <div className="text-[10px] text-slate-500 font-bold leading-tight">{role}</div>
+            {badgeText && (
+              <div className={`mt-1 ${badgeBgClass} ${badgeTextClass} text-[9px] font-bold px-2 py-0.5 rounded-full inline-block`}>
+                {badgeText}
               </div>
             )}
           </div>
@@ -68,17 +81,30 @@
           <div className="px-3 py-2 space-y-2 flex-grow bg-slate-50/50">
             {/* 消費税の内訳 */}
             {!isConsumer && (
-              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm text-[10px]">
-                <div className="flex justify-between text-blue-700">
+              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm text-[10px] relative">
+                {/* 預かった税の接続点 */}
+                <div className="absolute -left-1 top-3 w-2 h-2 bg-blue-500 rounded-full border border-white"></div>
+                <div className="flex justify-between text-blue-700 pl-2">
                   <span>預かった税</span>
                   <span>+{formatCurrency(taxCollected)}</span>
                 </div>
-                {purchaseTotal !== undefined && (
-                  <div className={`flex justify-between mt-1 pt-1 border-t border-dashed ${highlightDeduction ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
-                    <span>控除できる税</span>
+
+                {purchaseTotal !== undefined && !specialDeductionText && (
+                  <div className={`flex justify-between mt-1 pt-1 border-t border-dashed relative ${highlightDeduction ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
+                    {/* 支払った税の接続点 */}
+                    <div className="absolute -right-1 top-2 w-2 h-2 bg-rose-500 rounded-full border border-white"></div>
+                    <span className="pr-2">控除できる税</span>
                     <span>-{formatCurrency(taxDeductible)}</span>
                   </div>
                 )}
+                
+                {specialDeductionText && (
+                  <div className="flex justify-between mt-1 pt-1 border-t border-dashed text-emerald-600 font-bold">
+                    <span>{specialDeductionText}</span>
+                    <span>-{formatCurrency(specialDeductionAmount)}</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between font-bold mt-1 text-green-700 pt-1 border-t">
                   <span>国への納税</span>
                   <span>{formatCurrency(taxToPay)}</span>
@@ -87,19 +113,20 @@
             )}
 
             {isConsumer && (
-              <div className="bg-white p-2 rounded-lg border border-pink-200 text-[10px] text-center">
+              <div className="bg-white p-2 rounded-lg border border-pink-200 text-[10px] text-center relative">
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-rose-500 rounded-full border border-white"></div>
                 <span className="text-pink-600 font-bold block">負担する消費税</span>
                 <span className="text-sm font-black">{formatCurrency(taxCollected)}円</span>
               </div>
             )}
 
-            {/* 収支計算式（今回のメイン） */}
-            <div className={`p-2 rounded-lg border-2 ${isConsumer ? 'border-pink-200 bg-pink-50' : isExempt ? 'border-amber-200 bg-amber-50' : 'border-blue-200 bg-blue-50'}`}>
+            {/* 収支計算式 */}
+            <div className={`p-2 rounded-lg border-2 border-${themeColor}-200 bg-${themeColor}-50 bg-opacity-30`}>
               <div className="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-tighter">収支計算 (入金-出金-納税)</div>
               <div className="text-[10px] space-y-0.5">
                 <div className="flex justify-between">
                   <span>{isConsumer ? '収入' : '入金(売上)'}</span>
-                  <span className="text-slate-700">{formatCurrency(income)}</span>
+                  <span className="text-slate-700 font-medium">{formatCurrency(income)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>{isConsumer ? '支出(税込)' : '出金(仕入)'}</span>
@@ -115,7 +142,7 @@
             </div>
 
             {/* 最終利益 */}
-            <div className={`p-2 rounded-lg text-white ${isConsumer ? 'bg-pink-500' : isExempt ? 'bg-amber-500' : 'bg-blue-600'}`}>
+            <div className={`p-2 rounded-lg text-white bg-${themeColor}-600`}>
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold">最終収支</span>
                 <span className="text-sm font-black">{formatCurrency(netProfit)}円</span>
@@ -126,84 +153,157 @@
       );
     }
 
+    // ========================================
+    // コンポーネント：契約・取引ボックス
+    // ========================================
     const TransactionBox = ({ productName, price, tax, isExempt }: any) => (
-      <div className="relative w-[120px] h-full flex flex-col items-center justify-center pt-10">
-        <div className="mb-2 text-center z-10">
-          <div className="text-[10px] font-bold bg-white border border-slate-300 px-2 py-0.5 rounded-full shadow-sm mb-1 text-slate-600">
+      <div className="relative w-[100px] h-[340px] flex flex-col items-center justify-start pt-16">
+        <div className="text-center z-10">
+          <div className="text-[9px] font-bold bg-white border border-slate-300 px-2 py-0.5 rounded-full shadow-sm mb-1 text-slate-600 whitespace-nowrap">
             {productName}
           </div>
-          <div className="bg-slate-800 text-white rounded p-1 shadow-md">
-             <div className="text-[10px] font-black">{formatCurrency(price + tax)}円</div>
-             <div className="text-[8px] opacity-70">(うち税 {formatCurrency(tax)})</div>
+          <div className="bg-slate-800 text-white rounded p-1 shadow-md mb-2">
+             <div className="text-[10px] font-black leading-tight">{formatCurrency(price + tax)}円</div>
+             <div className="text-[8px] opacity-70 leading-tight">(税 {formatCurrency(tax)})</div>
           </div>
         </div>
-        <div className="w-full flex items-center px-1">
-          <div className="h-[2px] bg-slate-400 w-full"></div>
-          <div className="w-2 h-2 border-t-2 border-r-2 border-slate-400 rotate-45 -ml-1.5"></div>
+
+        {/* 商品の移動矢印 */}
+        <div className="w-full flex items-center px-1 z-10">
+          <div className="h-[2px] bg-slate-300 w-full"></div>
+          <div className="w-2 h-2 border-t-2 border-r-2 border-slate-300 rotate-45 -ml-1"></div>
         </div>
-        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{zIndex: 0}}>
-           <path d="M 0,135 Q 60,110 120,135" fill="none" stroke={isExempt ? "#fbbf24" : "#3b82f6"} strokeWidth="2" strokeDasharray="4" />
+
+        {/* 発生した消費税が分配されるSVG矢印 */}
+        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
+          {/* 左（預かり税）への青い矢印 */}
+          <path d="M 0,165 Q 50,110 50,135" fill="none" stroke={isExempt ? "#fbbf24" : "#3b82f6"} strokeWidth="2" strokeDasharray="3" />
+          <path d="M 0,165 Q -10,160 0,165" fill="none" stroke="#3b82f6" strokeWidth="2" /> {/* ダミー接点 */}
+          
+          {/* 右（支払い税）への赤い矢印 */}
+          <path d="M 50,135 Q 50,200 100,195" fill="none" stroke="#f43f5e" strokeWidth="2" strokeDasharray="3" />
         </svg>
+
+        <div className="absolute top-[115px] left-[-15px] text-[8px] text-blue-700 font-bold bg-white/80 px-1 rounded">預かる</div>
+        <div className="absolute top-[185px] right-[-15px] text-[8px] text-rose-700 font-bold bg-white/80 px-1 rounded">支払う</div>
       </div>
     );
 
+    // ========================================
+    // メインアプリケーション
+    // ========================================
     const App = () => {
-      const [isAExempt, setIsAExempt] = useState(true);
+      // モード: BEFORE, AFTER_EXEMPT, AFTER_REG_SPECIAL2, AFTER_REG_SPECIAL3, AFTER_REG_NORMAL
+      const [mode, setMode] = useState('BEFORE');
 
+      // 金額設定
       const taxRate = 0.1;
       const aSales = 10000; const aTax = aSales * taxRate;
       const bSales = 30000; const bTax = bSales * taxRate;
       const cSales = 50000; const cTax = cSales * taxRate;
 
-      const aTaxToPay = isAExempt ? 0 : aTax;
-      const bTaxDeductible = isAExempt ? 0 : aTax;
+      // A社の計算ロジック
+      let aTaxToPay = 0;
+      let bTaxDeductible = 0;
+      let aBadge = '';
+      let specialDeductionText = null;
+      let specialDeductionAmount = 0;
+      let isAExempt = false;
+
+      switch(mode) {
+        case 'BEFORE':
+          isAExempt = true;
+          aBadge = '免税 (益税あり)';
+          aTaxToPay = 0;
+          bTaxDeductible = aTax;
+          break;
+        case 'AFTER_EXEMPT':
+          isAExempt = true;
+          aBadge = '免税 (インボイス不可)';
+          aTaxToPay = 0;
+          bTaxDeductible = 0; // B社は控除不可
+          break;
+        case 'AFTER_REG_SPECIAL2':
+          aBadge = '2割特例適用';
+          aTaxToPay = aTax * 0.2;
+          bTaxDeductible = aTax; // インボイス発行するのでB社は控除可能
+          specialDeductionText = '特例控除 (8割)';
+          specialDeductionAmount = aTax * 0.8;
+          break;
+        case 'AFTER_REG_SPECIAL3':
+          aBadge = '簡易課税 (製造業3割)';
+          aTaxToPay = aTax * 0.3;
+          bTaxDeductible = aTax;
+          specialDeductionText = 'みなし仕入控除(7割)';
+          specialDeductionAmount = aTax * 0.7;
+          break;
+        case 'AFTER_REG_NORMAL':
+          aBadge = '本則課税 (原則)';
+          aTaxToPay = aTax; // A社の仕入れはゼロと仮定
+          bTaxDeductible = aTax;
+          break;
+      }
+
       const bTaxToPay = bTax - bTaxDeductible;
-      const cTaxToPay = cTax - bTax; // Bは登録済
-      
+      const cTaxToPay = cTax - bTax; // C-B間は常に登録済の前提
       const totalTaxRevenue = aTaxToPay + bTaxToPay + cTaxToPay;
 
       return (
-        <div className="max-w-6xl mx-auto pb-10">
-          <div className="bg-white rounded-3xl shadow-sm p-6 md:p-8 mb-8 border border-slate-200">
+        <div className="max-w-[1200px] mx-auto pb-10">
+          <header className="bg-white rounded-3xl shadow-sm p-6 md:p-8 mb-6 border border-slate-200">
             <h1 className="text-2xl md:text-3xl font-black text-slate-800 mb-6">
-              インボイス制度：取引リレーと「収支」の変化
+              インボイス制度：収支と損得の完全シミュレーター
             </h1>
 
-            {/* Tips：用語と計算式の解説 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-xl">
-                <h3 className="font-bold text-indigo-900 text-sm mb-1">💡 仕入税額控除（計算のルール）</h3>
-                <p className="text-[11px] text-indigo-800 leading-relaxed">
-                  <strong>自分が顧客から預かった消費税</strong>から、<strong>自分が仕入先に支払った消費税</strong>を差し引くこと。この「引き算」のおかげで、事業者は利益（付加価値）に対する税金だけを納めれば済みます。
+            {/* 4つのTips (Grid) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
+                <h3 className="font-bold text-blue-900 text-xs mb-1">💡 仕入税額控除とは？</h3>
+                <p className="text-[10px] text-blue-800 leading-relaxed">
+                  国に消費税を納付する際、<strong>自分が預かった消費税</strong>から<strong>自分が支払った消費税</strong>を差し引く（控除する）計算ルール。これにより二重課税を防ぎます。
                 </p>
               </div>
               <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl">
-                <h3 className="font-bold text-amber-900 text-sm mb-1">⚠️ 免税事業者と収支の関係</h3>
-                <p className="text-[11px] text-amber-800 leading-relaxed">
-                  免税事業者は「預かった税」を納めなくて良いため収支が増えます（<strong>益税</strong>）。一方で、買い手（B社）はインボイスがないと「引き算」ができず、納税額がその分増えてしまい、収支が悪化します。
+                <h3 className="font-bold text-amber-900 text-xs mb-1">⚠️ 免税事業者の「益税」と問題</h3>
+                <p className="text-[10px] text-amber-800 leading-relaxed">
+                  課税売上1千万円以下の事業者は消費税の納付が免除され、預かった税は「益税」として手元に残ります。しかし制度後はインボイスを発行できず、<strong>買い手側が控除できずに損をする（自腹を切る）</strong>問題が発生します。
+                </p>
+              </div>
+              <div className="bg-slate-100 border-l-4 border-slate-400 p-4 rounded-r-xl">
+                <h3 className="font-bold text-slate-700 text-xs mb-1">⚖️ 取引価格に消費税は含める？</h3>
+                <p className="text-[10px] text-slate-600 leading-relaxed">
+                  免税事業者も自身の経費（仕入）で消費税を払っているため、価格に消費税相当分を含めるのは正当です。ただし買い手からすると実質値上げになるため、値下げ交渉が起きやすくなっています。
+                </p>
+              </div>
+              <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+                <h3 className="font-bold text-emerald-900 text-xs mb-1">🛡️ 負担軽減措置（2割特例・簡易課税）</h3>
+                <p className="text-[10px] text-emerald-800 leading-relaxed">
+                  免税事業者が登録した際、2026年9月までは納税額を「売上税額の2割」に減らせる<strong>2割特例</strong>があります。終了後も<strong>簡易課税制度</strong>（業種ごとのみなし仕入率。例：製造業なら3割納付）を選択し、負担を抑えることができます。
                 </p>
               </div>
             </div>
 
-            {/* モード切替 */}
-            <div className="bg-slate-100 p-4 rounded-2xl border-2 border-slate-200 flex flex-col md:flex-row items-center justify-center gap-6">
-              <div className={`text-center md:text-right flex-1 transition-opacity ${!isAExempt ? 'opacity-100' : 'opacity-40'}`}>
-                <div className="font-black text-lg text-blue-600">A社：登録事業者</div>
-                <p className="text-[10px] text-slate-500">B社は1,000円をマイナス(控除)できる</p>
-              </div>
-              <button 
-                className={`relative inline-flex h-10 w-20 items-center rounded-full transition-colors shadow-inner flex-shrink-0 ${isAExempt ? 'bg-amber-500' : 'bg-blue-600'}`}
-                onClick={() => setIsAExempt(!isAExempt)}
-              >
-                <span className={`inline-block h-8 w-8 transform rounded-full bg-white shadow transition-transform duration-300 ${isAExempt ? 'translate-x-11' : 'translate-x-1'}`} />
+            {/* モードセレクター（5段階） */}
+            <div className="bg-slate-100 p-1.5 rounded-2xl border border-slate-200 flex flex-wrap gap-1">
+              <button onClick={() => setMode('BEFORE')} className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-black transition-all ${mode === 'BEFORE' ? 'bg-white shadow-md text-slate-700' : 'text-slate-400 hover:text-slate-600'}`}>
+                ① インボイス前<br/><span className="font-normal opacity-70">全員が得をしていた</span>
               </button>
-              <div className={`text-center md:text-left flex-1 transition-opacity ${isAExempt ? 'opacity-100' : 'opacity-40'}`}>
-                <div className="font-black text-lg text-amber-600">A社：免税事業者</div>
-                <p className="text-[10px] text-slate-500">B社は控除できず、<span className="text-rose-600 font-bold">納税額が1,000円増える</span></p>
-              </div>
+              <button onClick={() => setMode('AFTER_EXEMPT')} className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-black transition-all ${mode === 'AFTER_EXEMPT' ? 'bg-white shadow-md text-rose-600' : 'text-slate-400 hover:text-slate-600'}`}>
+                ② 導入後:免税維持<br/><span className="font-normal opacity-70">B社が控除できず損</span>
+              </button>
+              <button onClick={() => setMode('AFTER_REG_SPECIAL2')} className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-black transition-all ${mode === 'AFTER_REG_SPECIAL2' ? 'bg-white shadow-md text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>
+                ③ 導入後:2割特例<br/><span className="font-normal opacity-70">A社負担は僅か200円</span>
+              </button>
+              <button onClick={() => setMode('AFTER_REG_SPECIAL3')} className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-black transition-all ${mode === 'AFTER_REG_SPECIAL3' ? 'bg-white shadow-md text-emerald-700' : 'text-slate-400 hover:text-slate-600'}`}>
+                ④ 導入後:簡易課税<br/><span className="font-normal opacity-70">製造業のA社は300円</span>
+              </button>
+              <button onClick={() => setMode('AFTER_REG_NORMAL')} className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-black transition-all ${mode === 'AFTER_REG_NORMAL' ? 'bg-white shadow-md text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}>
+                ⑤ 導入後:本則課税<br/><span className="font-normal opacity-70">A社は全額(1000円)納税</span>
+              </button>
             </div>
-          </div>
+          </header>
 
+          {/* メイン図解エリア */}
           <div className="bg-white rounded-3xl shadow-xl p-6 overflow-x-auto scrollbar-hide border border-slate-200">
             <div className="min-w-max flex flex-col items-center">
               
@@ -211,50 +311,77 @@
                 <EntityBox 
                   name="A社" role="仕入先(部品)" icon="👨‍🔧"
                   taxCollected={aTax} taxToPay={aTaxToPay} 
-                  salesTotal={aSales+aTax} isExempt={isAExempt}
+                  salesTotal={aSales+aTax} 
+                  badgeText={aBadge} isExempt={isAExempt}
+                  specialDeductionText={specialDeductionText} specialDeductionAmount={specialDeductionAmount}
                 />
-                
                 <TransactionBox productName="取引①" price={aSales} tax={aTax} isExempt={isAExempt} />
                 
                 <EntityBox 
                   name="B社" role="製造メーカー" icon="🏭"
                   taxCollected={bTax} taxPaid={aTax} taxDeductible={bTaxDeductible} taxToPay={bTaxToPay}
                   salesTotal={bSales+bTax} purchaseTotal={aSales+aTax}
-                  highlightDeduction={isAExempt}
+                  badgeText="登録事業者" highlightDeduction={mode === 'AFTER_EXEMPT'}
                 />
-
                 <TransactionBox productName="取引②" price={bSales} tax={bTax} />
-
+                
                 <EntityBox 
                   name="C社" role="小売店" icon="🏪"
                   taxCollected={cTax} taxPaid={bTax} taxDeductible={bTax} taxToPay={cTaxToPay}
                   salesTotal={cSales+cTax} purchaseTotal={bSales+bTax}
+                  badgeText="登録事業者"
                 />
-
                 <TransactionBox productName="最終販売" price={cSales} tax={cTax} />
-
+                
                 <EntityBox 
                   name="消費者" role="最終負担者" icon="🛒"
                   taxCollected={cTax} salesTotal={0} purchaseTotal={cSales+cTax} isConsumer
                 />
               </div>
 
-              {/* 税務署合計 */}
-              <div className="mt-10 w-full max-w-4xl bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-2xl p-6 shadow-sm text-center">
-                <div className="text-xs font-black text-green-700 mb-2 uppercase">Total Tax Collected / 納税合計</div>
-                <div className="text-4xl font-black text-green-800">
-                  {formatCurrency(totalTaxRevenue)} <span className="text-xl">円</span>
+              {/* 収支変化のサマリーパネル */}
+              <div className="mt-8 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-lg">
+                  <h4 className="font-bold text-sm text-amber-400 mb-3 flex items-center"><span className="mr-2">⚖️</span> モード別 損得結果まとめ</h4>
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <p className="text-[10px] text-slate-400">A社(部品)の最終手残り</p>
+                      <p className={`text-lg font-black ${mode === 'AFTER_REG_SPECIAL2' ? 'text-emerald-400' : mode === 'AFTER_REG_NORMAL' ? 'text-rose-400' : ''}`}>
+                        {formatCurrency(isAExempt ? 11000 : 11000 - aTaxToPay)}円
+                      </p>
+                      <p className="text-[9px] text-slate-500 mt-0.5">{isAExempt ? "※税の納付なし(益税)" : `※納付額 ${formatCurrency(aTaxToPay)}円`}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400">B社(製造)の最終手残り</p>
+                      <p className={`text-lg font-black ${mode === 'AFTER_EXEMPT' ? 'text-rose-500' : 'text-blue-400'}`}>
+                        {formatCurrency(22000 - bTaxToPay)}円
+                      </p>
+                      <p className="text-[9px] text-slate-500 mt-0.5">{mode === 'AFTER_EXEMPT' ? "※控除できず1,000円損" : "※控除可能(通常通り)"}</p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[11px] text-green-700 mt-2">
-                  消費者が負担した5,000円が、各社に分担されて国に納められました。
-                </p>
+
+                <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5 flex flex-col justify-center text-center shadow-sm">
+                  <p className="text-[10px] font-bold text-green-700 uppercase tracking-widest mb-1">Total Tax Revenue / 国への納付合計</p>
+                  <div className="text-3xl font-black text-green-800">
+                    {formatCurrency(totalTaxRevenue)} <span className="text-lg">円</span>
+                  </div>
+                  <div className="mt-2 text-[10px] text-green-700 font-bold">
+                    {mode === 'BEFORE' 
+                      ? "⚠️ 5,000円徴収されるべき所、4,000円しか入っていません" 
+                      : mode === 'AFTER_EXEMPT'
+                      ? "✅ B社が自腹を切る形で5,000円回収されました"
+                      : "✅ 各事業者が負担を分け合い、5,000円が回収されました"}
+                  </div>
+                </div>
               </div>
 
             </div>
           </div>
 
-          <footer className="mt-6 text-[10px] text-slate-400 text-center">
-            ※各事業者の最終収支は、売上総利益から消費税の納税義務分を加味した実質的な手残り額を示しています。
+          <footer className="mt-6 text-center text-slate-400 text-[10px] space-y-1">
+            <p>※本則課税のシミュレーションにおいて、今回は計算を簡略化するためA社の仕入（経費）は0円としています。</p>
+            <p>※実際の取引では経過措置として、免税事業者からの仕入でも一定期間は8割・5割の控除が認められますが、本図解では「0%か100%か」で図示しています。</p>
           </footer>
         </div>
       );
